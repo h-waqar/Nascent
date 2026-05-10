@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Absolute Binary Color Palette (D-01) */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  
+  /* Background/Foreground overrides */
+  --color-background: var(--color-white);
+  --color-foreground: var(--color-black);
+
+  /* Strict Geometry: 0px Radius Globally (D-02) */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 0px;
+  --radius: 0px;
+
+  /* Custom Border Variable for consistency */
+  --border-primary: 1px solid var(--color-black);
+
+  /* Typography: Inter (D-03) */
+  --font-inter: var(--font-inter);
+  --font-sans: var(--font-inter);
+
+  /* UI-SPEC Spacing Scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-4xl: 96px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Layer Overrides to purge default grays/radius */
+@layer base {
+  body {
+    @apply bg-white text-black antialiased;
+    font-family: var(--font-inter), sans-serif;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
