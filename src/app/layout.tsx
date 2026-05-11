@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { AnimationWrapper } from "@/components/ui/AnimationWrapper";
 import "./globals.css";
 
 const inter = Inter({
@@ -48,8 +49,16 @@ export default function RootLayout({
         lang="en"
         className={`${inter.variable} h-full antialiased`}
       >
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&display=block"
+          />
+        </head>
         <body className="min-h-full flex flex-col selection:bg-black selection:text-white">
-          {children}
+          <AnimationWrapper>{children}</AnimationWrapper>
         </body>
       </html>
     </ClerkProvider>
