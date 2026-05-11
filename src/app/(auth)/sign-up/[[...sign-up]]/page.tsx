@@ -28,7 +28,7 @@ export default function SignUpPage() {
           },
           elements: {
             rootBox: "w-full",
-            card: "bg-white shadow-none border-0 p-0",
+            card: "bg-white shadow-none border-0 p-0 rounded-none",
             headerTitle: "hidden",
             headerSubtitle: "hidden",
             socialButtonsBlockButton:
@@ -38,12 +38,14 @@ export default function SignUpPage() {
             formButtonPrimary:
               "bg-black text-white border border-black rounded-none hover:bg-white hover:text-black uppercase tracking-wider",
             footerActionLink: "text-black underline hover:no-underline",
+            footer: "hidden",
             dividerLine: "bg-black",
             dividerText: "text-black uppercase tracking-wider",
           },
           layout: {
             socialButtonsPlacement: "top",
             socialButtonsVariant: "blockButton",
+            unsafe_disableDevelopmentModeWarnings: true,
           },
         }}
       />

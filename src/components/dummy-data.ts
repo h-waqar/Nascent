@@ -113,7 +113,7 @@ export const PRODUCTS: Product[] = [
     price: 210,
     stock: 18,
     images: [
-      "https://images.unsplash.com/photo-1512290923902-8a9f81dc206e?auto=format&fit=crop&q=80&w=1000",
+      "https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80&w=1000",
     ],
     scentNotes: ["Fresh", "Moderate"],
     categoryId: "cat-01",
