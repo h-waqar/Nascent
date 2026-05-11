@@ -1,11 +1,5 @@
 import { Product, Category } from "@/types/models";
 
-/**
- * Canonical Mock Data (D-05, D-08)
- * This file serves as the temporary database for UI development.
- * All records must strictly follow the interfaces defined in @/types/models.
- */
-
 export const CATEGORIES: Category[] = [
   {
     id: "cat-01",
@@ -16,9 +10,9 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: "cat-02",
-    slug: "monochrome-series",
-    name: "Monochrome Series",
-    description: "Fragrances explored through a single, dominant note.",
+    slug: "nocturnal-collection",
+    name: "Nocturnal Collection",
+    description: "Fragrances that inhabit the dark hours. Dense, architectural, uncompromising.",
     imageUrl: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&q=80&w=1000",
   },
   {
@@ -33,58 +27,102 @@ export const CATEGORIES: Category[] = [
 export const PRODUCTS: Product[] = [
   {
     id: "prod-01",
-    slug: "ink-paper",
-    name: "Ink & Paper",
-    description: "A clinical exploration of cedarwood, vetiver, and a cold metallic accord. Mimics the scent of a fresh luxury publication.",
-    price: 120,
+    slug: "walk-in-garden",
+    name: "Walk in Garden",
+    description: "A journey through a blooming sanctuary. Cold, structural floral notes grounded in stark earthy undertones. An uncompromising interpretation of nature.",
+    price: 185,
     stock: 24,
     images: [
-      "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1000",
-      "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=1000"
+      "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=1000",
     ],
-    scentNotes: ["Cedarwood", "Vetiver", "ISO E Super", "Metal"],
+    scentNotes: ["Floral", "Fresh"],
     categoryId: "cat-01",
     isFeatured: true,
+    collection: "SIGNATURE COLLECTION // 001",
+    intensity: "Moderate",
+    volume: "50ml Extrait de Parfum",
+    topNote: "Bergamot, White Tea",
+    heartNote: "Jasmine, Neroli",
+    baseNote: "Vetiver, Cold Musk",
   },
   {
     id: "prod-02",
-    slug: "concrete-bloom",
-    name: "Concrete Bloom",
-    description: "The contrast between harsh brutalist architecture and the fragile iris flower. Cold, powdery, and industrial.",
-    price: 145,
+    slug: "phantom-elixir",
+    name: "Phantom Elixir",
+    description: "An architectural study in shadow. A stark, uncompromising fragrance that strips away the superfluous to reveal a cold, precise core. It speaks of brutalist concrete, midnight air, and absolute clarity.",
+    price: 220,
     stock: 12,
     images: [
-      "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&q=80&w=1000"
+      "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&q=80&w=1000",
     ],
-    scentNotes: ["Iris", "Gunpowder", "Concrete Accord", "Ambroxan"],
-    categoryId: "cat-01",
+    scentNotes: ["Oriental", "Intense"],
+    categoryId: "cat-02",
     isFeatured: true,
+    collection: "NOCTURNAL COLLECTION // 004",
+    intensity: "Intense",
+    volume: "50ml Extrait de Parfum",
+    topNote: "Sichuan Pepper, Cardamom",
+    heartNote: "Smoked Jasmine Absolute",
+    baseNote: "Aged Indonesian Oud",
   },
   {
     id: "prod-03",
-    slug: "absolute-zero",
-    name: "Absolute Zero",
-    description: "The olfactory representation of silence. A sharp, freezing blast of peppermint and frankincense.",
-    price: 95,
-    stock: 50,
+    slug: "midnight-oud",
+    name: "Midnight Oud",
+    description: "The darkest expression in our nocturnal range. Dense resinous oud fused with cold vetiver and a trace of birch smoke. A fragrance for those who inhabit the dark hours.",
+    price: 240,
+    stock: 8,
     images: [
-      "https://images.unsplash.com/photo-1512290923902-8a9f81dc206e?auto=format&fit=crop&q=80&w=1000"
+      "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&q=80&w=1000",
     ],
-    scentNotes: ["Peppermint", "Frankincense", "White Musk"],
+    scentNotes: ["Woody", "Intense"],
     categoryId: "cat-02",
+    isFeatured: true,
+    collection: "NOCTURNAL COLLECTION // 002",
+    intensity: "Intense",
+    volume: "50ml Extrait de Parfum",
+    topNote: "Black Pepper, Cypriol",
+    heartNote: "Birch Smoke, Leather",
+    baseNote: "Aged Oud, Amber",
   },
   {
     id: "prod-04",
-    slug: "vanta-black",
-    name: "Vanta Black",
-    description: "The darkest oud fragrance in our collection. Smoked leather and intense amber.",
-    price: 210,
-    stock: 8,
+    slug: "santal-blanc",
+    name: "Santal Blanc",
+    description: "A study in restraint. Pale sandalwood stripped of sentimentality — clean, cold, and precise. The olfactory equivalent of an empty white room.",
+    price: 195,
+    stock: 30,
     images: [
-      "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&q=80&w=1000"
+      "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1000",
     ],
-    scentNotes: ["Oud", "Cypriol", "Leather", "Birch Tar"],
-    categoryId: "cat-02",
-    isFeatured: true,
+    scentNotes: ["Woody", "Subtle"],
+    categoryId: "cat-01",
+    isFeatured: false,
+    collection: "SIGNATURE COLLECTION // 003",
+    intensity: "Subtle",
+    volume: "50ml Extrait de Parfum",
+    topNote: "White Cedar, Aldehydes",
+    heartNote: "Sandalwood, Orris Root",
+    baseNote: "White Musk, Ambroxan",
+  },
+  {
+    id: "prod-05",
+    slug: "vetiver-absolute",
+    name: "Vetiver Absolute",
+    description: "Haitian vetiver in its most concentrated form. Earthy, smoky, and achingly precise. A linear fragrance that refuses embellishment.",
+    price: 210,
+    stock: 18,
+    images: [
+      "https://images.unsplash.com/photo-1512290923902-8a9f81dc206e?auto=format&fit=crop&q=80&w=1000",
+    ],
+    scentNotes: ["Fresh", "Moderate"],
+    categoryId: "cat-01",
+    isFeatured: false,
+    collection: "SIGNATURE COLLECTION // 005",
+    intensity: "Moderate",
+    volume: "50ml Extrait de Parfum",
+    topNote: "Grapefruit, Green Accord",
+    heartNote: "Clary Sage, Vetiver Heart",
+    baseNote: "Haitian Vetiver, Cedarwood",
   },
 ];

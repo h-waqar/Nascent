@@ -12,9 +12,15 @@ export interface Product {
   price: number;
   stock: number;
   images: string[];
-  scentNotes: string[];
+  scentNotes: string[];        // e.g. ["Floral", "Fresh"] — shown in collections grid
   categoryId: string;
   isFeatured?: boolean;
+  collection?: string;          // e.g. "NOCTURNAL COLLECTION // 004"
+  intensity?: "Subtle" | "Moderate" | "Intense";
+  volume?: string;              // e.g. "50ml Extrait de Parfum"
+  topNote?: string;
+  heartNote?: string;
+  baseNote?: string;
 }
 
 export interface Category {
@@ -34,6 +40,7 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
+  image?: string;
 }
 
 export interface ShippingAddress {

@@ -1,15 +1,20 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-/**
- * Clerk Middleware (D-12)
- * Manages public vs protected routes for the e-commerce flow.
- */
-
 const isPublicRoute = createRouteMatcher([
-  '/', 
-  '/sign-in(.*)', 
-  '/sign-up(.*)',
-  '/api/public(.*)' // Placeholder for public APIs
+  "/",
+  "/collections(.*)",
+  "/products(.*)",
+  "/contact(.*)",
+  "/about(.*)",
+  "/archive(.*)",
+  "/stores(.*)",
+  "/privacy(.*)",
+  "/terms(.*)",
+  "/shipping(.*)",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/products(.*)",
+  "/api/categories(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
@@ -20,9 +25,7 @@ export default clerkMiddleware(async (auth, request) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
   ],
 };

@@ -1,50 +1,31 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-/**
- * Mongoose Connection Caching (REQ-2)
- * Prevents connection limit exhaustion in serverless/HMR environments.
- */
-
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
-}
-
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections from growing exponentially
- * during API Route usage.
- */
-let cached = (global as any).mongoose;
+let cached = (global as { mongoose?: { conn: unknown; promise: Promise<unknown> | null } }).mongoose;
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+  cached = (global as { mongoose?: { conn: unknown; promise: Promise<unknown> | null } }).mongoose = {
+    conn: null,
+    promise: null,
+  };
 }
 
-async function connectToDatabase() {
-  if (cached.conn) {
-    return cached.conn;
+export default async function connectToDatabase() {
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is not defined");
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
+  if (cached!.conn) return cached!.conn;
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      return mongoose;
-    });
+  if (!cached!.promise) {
+    cached!.promise = mongoose.connect(process.env.MONGODB_URI, { bufferCommands: false });
   }
 
   try {
-    cached.conn = await cached.promise;
+    cached!.conn = await cached!.promise;
   } catch (e) {
-    cached.promise = null;
+    cached!.promise = null;
     throw e;
   }
 
-  return cached.conn;
+  return cached!.conn;
 }
-
-export default connectToDatabase;
