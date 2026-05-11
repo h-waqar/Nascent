@@ -5,6 +5,7 @@ import Image from "next/image";
 import { use } from "react";
 import { PRODUCTS } from "@/components/dummy-data";
 import { useCartStore } from "@/lib/cart";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -17,6 +18,7 @@ export default function ProductPage({ params }: Props) {
   const product = found!;
 
   const { addItem, openCart } = useCartStore();
+  const specsReveal = useScrollReveal(0.15);
 
   function handleAddToCart() {
     addItem({
@@ -40,6 +42,7 @@ export default function ProductPage({ params }: Props) {
             alt={product.name}
             fill
             priority
+            sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover grayscale"
           />
         </div>
@@ -52,17 +55,20 @@ export default function ProductPage({ params }: Props) {
                 {product.collection}
               </p>
             )}
-            <h1 className="text-[80px] leading-none tracking-[-0.04em] font-light text-black uppercase mb-8">
+            <h1 className="text-[40px] md:text-[56px] lg:text-[72px] leading-none tracking-[-0.04em] font-light text-black uppercase mb-8">
               {product.name}
             </h1>
-            <p className="text-[18px] leading-[1.6] text-black max-w-lg mb-12">
+            <p className="text-[18px] leading-[1.6] text-black max-w-[512px] mb-12">
               {product.description}
             </p>
           </div>
 
           {/* Olfactory profile */}
           {(product.topNote || product.heartNote || product.baseNote) && (
-            <div className="mb-16 border-t border-black pt-8">
+            <div
+              ref={specsReveal.ref}
+              className={`mb-16 border-t border-black pt-8 transition-[opacity,transform] duration-700 ease-out ${specsReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+            >
               <h3 className="font-['Inter'] uppercase tracking-[0.1em] text-[11px] font-semibold text-black mb-8">
                 Olfactory Profile
               </h3>
@@ -108,7 +114,7 @@ export default function ProductPage({ params }: Props) {
 
       {/* ── Technical specs ── */}
       <section className="py-24 px-12 lg:px-24 bg-white">
-        <div className="max-w-4xl mx-auto">
+        <div>
           <div className="border-b border-black pb-4 mb-16">
             <h2 className="text-[24px] leading-[1.2] tracking-[0.05em] font-medium text-black uppercase">
               Technical Specifications

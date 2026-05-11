@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Link from "next/link";
 import Image from "next/image";
 import { PRODUCTS } from "@/components/dummy-data";
@@ -9,6 +10,7 @@ const SCENT_PROFILES = ["Floral", "Woody", "Oriental", "Fresh"];
 const INTENSITIES = ["Subtle", "Moderate", "Intense"];
 
 export default function CollectionsPage() {
+  const gridReveal = useScrollReveal(0.15);
   const [selectedScents, setSelectedScents] = useState<string[]>([]);
   const [selectedIntensities, setSelectedIntensities] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -137,45 +139,43 @@ export default function CollectionsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
+          <div
+            ref={gridReveal.ref}
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 transition-[opacity,transform] duration-700 ease-out ${gridReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          >
             {filtered.map((product) => (
-              <div
+              <Link
                 key={product.id}
-                className="border-b border-r border-black flex flex-col bg-white group"
+                href={`/products/${product.slug}`}
+                className="border-b border-r border-black flex flex-col bg-white group overflow-hidden cursor-pointer"
               >
-                {/* Image */}
-                <div className="aspect-[3/4] w-full overflow-hidden p-8 flex items-center justify-center bg-[#f9f9f9] border-b border-black relative">
+                {/* Image — full bleed with hover overlay */}
+                <div className="relative h-72 bg-[#f0eeee] overflow-hidden">
                   <Image
                     src={product.images[0]}
                     alt={product.name}
                     fill
-                    className="object-contain grayscale p-8"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover grayscale transition-transform duration-500 group-hover:scale-105"
                   />
+                  {/* View overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-white text-white text-[11px] uppercase tracking-[0.2em] font-semibold px-6 py-3 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                      View
+                    </span>
+                  </div>
                 </div>
 
-                {/* Info */}
-                <div className="p-6 flex flex-col justify-between flex-grow">
-                  <div>
-                    <h4 className="text-[24px] leading-[1.2] tracking-[0.05em] font-medium mb-2">
-                      {product.name}
-                    </h4>
-                    <p className="font-['Inter'] text-[14px] text-[#4c4546] mb-4">
-                      {product.scentNotes.join(" / ")}
-                    </p>
-                  </div>
-                  <div className="flex justify-between items-center mt-auto">
-                    <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold">
-                      ${product.price}
-                    </span>
-                    <Link
-                      href={`/products/${product.slug}`}
-                      className="border border-black px-4 py-2 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-black hover:text-white transition-none"
-                    >
-                      View
-                    </Link>
-                  </div>
+                {/* Info bar */}
+                <div className="px-5 py-4 flex justify-between items-center bg-white text-black border-t border-black group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                  <span className="font-['Inter'] uppercase tracking-[0.12em] text-[11px] font-semibold">
+                    {product.name}
+                  </span>
+                  <span className="font-['Inter'] text-[11px] font-semibold">
+                    ${product.price}
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
