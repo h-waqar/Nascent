@@ -62,7 +62,7 @@ export default function OrderConfirmationPage({ params }: Props) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-6 py-24 lg:px-24">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-[672px] mx-auto">
         {/* Header */}
         <div className="border-b border-black pb-12 mb-12 text-center">
           <div className="w-12 h-12 border border-black flex items-center justify-center mx-auto mb-8">
@@ -144,6 +144,13 @@ export default function OrderConfirmationPage({ params }: Props) {
             className="flex-1 border border-black bg-white text-black py-4 px-8 text-[11px] uppercase tracking-[0.15em] font-semibold hover:bg-black hover:text-white transition-none flex items-center justify-center gap-2"
           >
             Return to Shop
+          </Link>
+          <Link
+            href={`/orders/${order.id}/invoice`}
+            className="flex-1 border border-black bg-white text-black py-4 px-8 text-[11px] uppercase tracking-[0.15em] font-semibold hover:bg-black hover:text-white transition-none flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+            View Invoice
           </Link>
         </div>
 
