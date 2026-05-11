@@ -156,10 +156,10 @@ export default function CollectionsPage() {
                     alt={product.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover grayscale transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover grayscale transition-[filter] duration-300 ease-out group-hover:grayscale-0"
                   />
                   {/* View overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-[background-color] duration-300 flex items-center justify-center">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-white text-white text-[11px] uppercase tracking-[0.2em] font-semibold px-6 py-3 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                       View
                     </span>

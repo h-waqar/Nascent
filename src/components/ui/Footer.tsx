@@ -19,13 +19,13 @@ export function Footer() {
             <Link
               key={href}
               href={href}
-              className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546] hover:text-black transition-none"
+              className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-black hover:underline transition-none"
             >
               {label}
             </Link>
           ))}
         </nav>
-        <div className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546] text-center md:text-right">
+        <div className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-black text-center md:text-right">
           ©{new Date().getFullYear()} Nascent Fragrances. All Rights Reserved.
         </div>
       </div>
