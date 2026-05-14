@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ProductModel, CategoryModel, OrderModel } from "@/models";
+import { ProductModel, CategoryModel, OrderModel, SettingsModel } from "@/models";
 
 describe("Mongoose models", () => {
   it("Product schema declares numeric price and required slug", () => {
@@ -20,8 +20,11 @@ describe("Mongoose models", () => {
     };
     expect(statusPath.enumValues).toEqual([
       "pending",
+      "confirmed",
+      "processing",
       "shipped",
       "delivered",
+      "refunded",
       "cancelled",
     ]);
   });
@@ -36,5 +39,31 @@ describe("Mongoose models", () => {
   it("Order requires non-empty items array", () => {
     const itemsPath = OrderModel.schema.path("items");
     expect(itemsPath.isRequired).toBe(true);
+  });
+
+  it("Settings schema declares boolean payment flags defaulting true", () => {
+    const codPath = SettingsModel.schema.path("codEnabled") as unknown as {
+      instance: string;
+      defaultValue: boolean;
+    };
+    const bankPath = SettingsModel.schema.path("bankTransferEnabled") as unknown as {
+      instance: string;
+      defaultValue: boolean;
+    };
+    expect(codPath.instance).toBe("Boolean");
+    expect(codPath.defaultValue).toBe(true);
+    expect(bankPath.instance).toBe("Boolean");
+    expect(bankPath.defaultValue).toBe(true);
+  });
+
+  it("Settings schema declares string bank fields", () => {
+    const accountNamePath = SettingsModel.schema.path("accountName") as unknown as {
+      instance: string;
+    };
+    const sortCodePath = SettingsModel.schema.path("sortCode") as unknown as {
+      instance: string;
+    };
+    expect(accountNamePath.instance).toBe("String");
+    expect(sortCodePath.instance).toBe("String");
   });
 });
