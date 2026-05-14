@@ -12,17 +12,16 @@ export async function GET(_req: NextRequest) {
     await connectToDatabase();
     const products = await ProductModel.find({}).sort({ createdAt: -1 }).lean();
     return NextResponse.json({
-      products: products.map((p) => ({
-        ...p,
-        id: p._id.toString(),
-        _id: undefined,
-        createdAt: (p as { createdAt?: Date }).createdAt
-          ? ((p as { createdAt: Date }).createdAt).toISOString()
-          : undefined,
-        updatedAt: (p as { updatedAt?: Date }).updatedAt
-          ? ((p as { updatedAt: Date }).updatedAt).toISOString()
-          : undefined,
-      })),
+      products: products.map((p) => {
+        const raw = p as unknown as Record<string, unknown>;
+        return {
+          ...raw,
+          id: p._id.toString(),
+          _id: undefined,
+          createdAt: raw.createdAt instanceof Date ? raw.createdAt.toISOString() : undefined,
+          updatedAt: raw.updatedAt instanceof Date ? raw.updatedAt.toISOString() : undefined,
+        };
+      }),
     });
   } catch (e) {
     console.error("GET /api/admin/products:", e);
@@ -63,15 +62,17 @@ export async function POST(req: NextRequest) {
       );
     }
     const created = await ProductModel.create(parsed.data);
-    const obj = created.toObject ? created.toObject() : created;
+    const rawObj = (created.toObject ? created.toObject() : created) as Record<string, unknown>;
     return NextResponse.json(
       {
         product: {
-          ...obj,
-          id: obj._id.toString(),
+          ...rawObj,
+          id: (rawObj._id as { toString(): string }).toString(),
           _id: undefined,
-          createdAt: obj.createdAt ? new Date(obj.createdAt).toISOString() : undefined,
-          updatedAt: obj.updatedAt ? new Date(obj.updatedAt).toISOString() : undefined,
+          createdAt:
+            rawObj.createdAt instanceof Date ? rawObj.createdAt.toISOString() : undefined,
+          updatedAt:
+            rawObj.updatedAt instanceof Date ? rawObj.updatedAt.toISOString() : undefined,
         },
       },
       { status: 201 }
