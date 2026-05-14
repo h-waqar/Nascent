@@ -4,7 +4,7 @@ const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "447700000000
 
 export function generateWhatsAppLink(order: Order): string {
   const itemLines = order.items
-    .map((item) => `• ${item.name} x${item.quantity} — $${(item.price * item.quantity).toFixed(2)}`)
+    .map((item) => `• ${item.name} x${item.quantity} — £${(item.price * item.quantity).toFixed(2)}`)
     .join("\n");
 
   const message = [
@@ -14,8 +14,8 @@ export function generateWhatsAppLink(order: Order): string {
     `*Items:*`,
     itemLines,
     ``,
-    `Subtotal: $${order.subtotal.toFixed(2)}`,
-    `Total: $${order.total.toFixed(2)}`,
+    `Subtotal: £${order.subtotal.toFixed(2)}`,
+    `Total: £${order.total.toFixed(2)}`,
     `Payment: ${order.paymentMethod === "bank_transfer" ? "Direct Bank Transfer" : "Cash on Delivery"}`,
     ``,
     `*Ship to:*`,
