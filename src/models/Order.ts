@@ -40,7 +40,7 @@ const OrderSchema = new Schema<OrderDoc>(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "shipped", "delivered", "cancelled"],
+      enum: ["pending", "confirmed", "processing", "shipped", "delivered", "refunded", "cancelled"],
       default: "pending",
     },
     paymentMethod: {

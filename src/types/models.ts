@@ -31,7 +31,14 @@ export interface Category {
   imageUrl: string;
 }
 
-export type OrderStatus = "pending" | "shipped" | "delivered" | "cancelled";
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "refunded"
+  | "cancelled";
 export type PaymentMethod = "cod" | "bank_transfer";
 
 export interface OrderItem {
@@ -65,4 +72,15 @@ export interface Order {
   whatsappLink?: string;     // populated when WhatsApp link is generated (REQ §6)
   createdAt: string;         // ISO date string — frontend-safe (no Date object)
   updatedAt: string;
+}
+
+export interface Settings {
+  id: string;
+  accountName: string;
+  accountNumber: string;
+  sortCode: string;
+  bankName: string;
+  codEnabled: boolean;
+  bankTransferEnabled: boolean;
+  updatedAt: string; // ISO date string
 }
