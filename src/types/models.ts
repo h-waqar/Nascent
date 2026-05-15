@@ -76,10 +76,10 @@ export interface Order {
 
 export interface Settings {
   id: string;
+  bankName: string;
   accountName: string;
   accountNumber: string;
-  sortCode: string;
-  bankName: string;
+  iban: string;
   codEnabled: boolean;
   bankTransferEnabled: boolean;
   updatedAt: string; // ISO date string

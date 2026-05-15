@@ -8,10 +8,10 @@ type SettingsDoc = Omit<Settings, "id" | "updatedAt"> & {
 
 const SettingsSchema = new Schema<SettingsDoc>(
   {
+    bankName: { type: String, default: "" },
     accountName: { type: String, default: "" },
     accountNumber: { type: String, default: "" },
-    sortCode: { type: String, default: "" },
-    bankName: { type: String, default: "" },
+    iban: { type: String, default: "" },
     codEnabled: { type: Boolean, default: true },
     bankTransferEnabled: { type: Boolean, default: true },
   },

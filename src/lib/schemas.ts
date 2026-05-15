@@ -27,10 +27,10 @@ export const UpdateOrderStatusSchema = z.object({
 });
 
 export const UpdateSettingsSchema = z.object({
+  bankName: z.string().max(200).optional(),
   accountName: z.string().max(200).optional(),
   accountNumber: z.string().max(50).optional(),
-  sortCode: z.string().max(20).optional(),
-  bankName: z.string().max(200).optional(),
+  iban: z.string().max(34).optional(),
   codEnabled: z.boolean().optional(),
   bankTransferEnabled: z.boolean().optional(),
 });
