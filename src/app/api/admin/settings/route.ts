@@ -5,10 +5,10 @@ import { SettingsModel } from "@/models";
 import { UpdateSettingsSchema } from "@/lib/schemas";
 
 const DEFAULT_SETTINGS = {
+  bankName: "",
   accountName: "",
   accountNumber: "",
-  sortCode: "",
-  bankName: "",
+  iban: "",
   codEnabled: true,
   bankTransferEnabled: true,
 };
@@ -21,10 +21,10 @@ function serialize(doc: Record<string, unknown> | null) {
   };
   return {
     id: d._id ? d._id.toString() : undefined,
+    bankName: (d.bankName as string) ?? "",
     accountName: (d.accountName as string) ?? "",
     accountNumber: (d.accountNumber as string) ?? "",
-    sortCode: (d.sortCode as string) ?? "",
-    bankName: (d.bankName as string) ?? "",
+    iban: (d.iban as string) ?? "",
     codEnabled: typeof d.codEnabled === "boolean" ? d.codEnabled : true,
     bankTransferEnabled:
       typeof d.bankTransferEnabled === "boolean" ? d.bankTransferEnabled : true,

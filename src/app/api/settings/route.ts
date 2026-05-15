@@ -3,10 +3,10 @@ import connectToDatabase from "@/lib/db";
 import { SettingsModel } from "@/models";
 
 const DEFAULT_SETTINGS = {
+  bankName: "",
   accountName: "",
   accountNumber: "",
-  sortCode: "",
-  bankName: "",
+  iban: "",
   codEnabled: true,
   bankTransferEnabled: true,
 };
@@ -19,10 +19,10 @@ export async function GET(_req: NextRequest) {
     const d = doc as Record<string, unknown>;
     return NextResponse.json({
       settings: {
+        bankName: (d.bankName as string) ?? "",
         accountName: (d.accountName as string) ?? "",
         accountNumber: (d.accountNumber as string) ?? "",
-        sortCode: (d.sortCode as string) ?? "",
-        bankName: (d.bankName as string) ?? "",
+        iban: (d.iban as string) ?? "",
         codEnabled: typeof d.codEnabled === "boolean" ? d.codEnabled : true,
         bankTransferEnabled:
           typeof d.bankTransferEnabled === "boolean"
