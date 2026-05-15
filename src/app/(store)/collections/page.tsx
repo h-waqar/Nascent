@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Link from "next/link";
 import Image from "next/image";
-import { PRODUCTS } from "@/components/dummy-data";
+import type { Product } from "@/types/models";
 import { formatPrice } from "@/lib/currency";
 
 const SCENT_PROFILES = ["Floral", "Woody", "Oriental", "Fresh"];
@@ -12,14 +12,22 @@ const INTENSITIES = ["Subtle", "Moderate", "Intense"];
 
 export default function CollectionsPage() {
   const gridReveal = useScrollReveal(0.15);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [selectedScents, setSelectedScents] = useState<string[]>([]);
   const [selectedIntensities, setSelectedIntensities] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => setAllProducts(data.products ?? []))
+      .catch(() => {});
+  }, []);
+
   const filtered = useMemo(() => {
-    return PRODUCTS.filter((p) => {
+    return allProducts.filter((p) => {
       if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
       if (selectedScents.length > 0 && !selectedScents.some((s) => p.scentNotes.includes(s)))
         return false;
@@ -29,7 +37,7 @@ export default function CollectionsPage() {
       if (maxPrice && p.price > Number(maxPrice)) return false;
       return true;
     });
-  }, [search, selectedScents, selectedIntensities, minPrice, maxPrice]);
+  }, [allProducts, search, selectedScents, selectedIntensities, minPrice, maxPrice]);
 
   function toggleFilter<T>(arr: T[], val: T, set: (v: T[]) => void) {
     set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);

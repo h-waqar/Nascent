@@ -2,8 +2,8 @@
 
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { use } from "react";
-import { PRODUCTS } from "@/components/dummy-data";
+import { use, useState, useEffect } from "react";
+import type { Product } from "@/types/models";
 import { useCartStore } from "@/lib/cart";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { formatPrice } from "@/lib/currency";
@@ -14,20 +14,37 @@ interface Props {
 
 export default function ProductPage({ params }: Props) {
   const { slug } = use(params);
-  const found = PRODUCTS.find((p) => p.slug === slug);
-  if (!found) notFound();
-  const product = found!;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [status, setStatus] = useState<"loading" | "ok" | "notfound">("loading");
+
+  useEffect(() => {
+    fetch(`/api/products/${slug}`)
+      .then((r) => {
+        if (r.status === 404) { setStatus("notfound"); return; }
+        return r.json().then((data) => { setProduct(data.product); setStatus("ok"); });
+      })
+      .catch(() => setStatus("notfound"));
+  }, [slug]);
 
   const { addItem, openCart } = useCartStore();
   const specsReveal = useScrollReveal(0.15);
 
+  if (status === "notfound") notFound();
+  if (status === "loading" || !product) {
+    return (
+      <div className="max-w-[1440px] mx-auto min-h-[calc(100vh-80px)] flex items-center justify-center">
+        <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">Loading...</p>
+      </div>
+    );
+  }
+
   function handleAddToCart() {
     addItem({
-      productId: product.id,
-      slug: product.slug,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
+      productId: product!.id,
+      slug: product!.slug,
+      name: product!.name,
+      price: product!.price,
+      image: product!.images[0],
     });
     openCart();
   }

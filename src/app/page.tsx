@@ -1,16 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Nav } from "@/components/ui/Nav";
 import { Footer } from "@/components/ui/Footer";
-import { PRODUCTS } from "@/components/dummy-data";
+import type { Product } from "@/types/models";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { formatPrice } from "@/lib/currency";
 
 export default function Home() {
-  const featured = PRODUCTS.filter((p) => p.isFeatured).slice(0, 3);
-  const featured1 = PRODUCTS[0];
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch("/api/products?featured=true")
+      .then((r) => r.json())
+      .then((data) => setProducts(data.products ?? []))
+      .catch(() => {});
+  }, []);
+
+  const featured = products.slice(0, 3);
+  const featured1 = products[0];
   const featuredReveal = useScrollReveal<HTMLElement>(0.15);
   const archReveal = useScrollReveal<HTMLElement>(0.15);
   const gridReveal = useScrollReveal<HTMLElement>(0.15);
@@ -47,6 +57,7 @@ export default function Home() {
         </section>
 
         {/* ── Featured fragrance ── */}
+        {featured1 && (
         <section
           ref={featuredReveal.ref}
           className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${featuredReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -80,8 +91,10 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
 
         {/* ── Scent architecture ── */}
+        {featured1 && (
         <section
           ref={archReveal.ref}
           className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${archReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -120,6 +133,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
 
         {/* ── Curated product grid ── */}
         <section
