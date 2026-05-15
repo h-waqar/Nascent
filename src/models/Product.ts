@@ -22,7 +22,7 @@ const ProductSchema = new Schema<ProductDoc>(
     heartNote: { type: String },
     baseNote: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true, suppressReservedKeysWarning: true }
 );
 
 export const ProductModel: Model<ProductDoc> =

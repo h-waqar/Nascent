@@ -36,6 +36,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid payment method" }, { status: 400 });
   }
 
+  // Hoist these so the catch block can restore stock if OrderModel.create fails.
+  let verifiedItems: OrderItem[] = [];
+  const decremented: string[] = [];
+
   try {
     await connectToDatabase();
 
@@ -58,7 +62,6 @@ export async function POST(req: NextRequest) {
     );
 
     // Replace client prices with DB prices and validate all products exist.
-    const verifiedItems: OrderItem[] = [];
     for (const item of items) {
       const dbPrice = priceMap.get(item.productId);
       if (dbPrice === undefined) {
@@ -75,8 +78,6 @@ export async function POST(req: NextRequest) {
     const total = subtotal + shipping;
 
     // CR-02: Check and atomically decrement stock before creating the order.
-    // Track decremented product IDs so we can compensate on failure.
-    const decremented: string[] = [];
     for (const item of verifiedItems) {
       const updated = await ProductModel.findOneAndUpdate(
         { _id: item.productId, stock: { $gte: item.quantity } },
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest) {
         // Compensate: restore stock for all already-decremented products.
         for (const pid of decremented) {
           const qty = verifiedItems.find((i) => i.productId === pid)?.quantity ?? 0;
-          await ProductModel.findByIdAndUpdate(pid, { $inc: { stock: qty } });
+          await ProductModel.findByIdAndUpdate(pid, { $inc: { stock: qty } }).catch(() => {});
         }
         return NextResponse.json(
           { error: `Insufficient stock for: ${item.name}` },
@@ -125,6 +126,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ order: { ...orderPlain, whatsappLink } }, { status: 201 });
   } catch (e) {
+    // If OrderModel.create (or WhatsApp link steps) threw after stock was decremented,
+    // restore the decremented inventory to avoid a silent stock leak.
+    if (decremented.length > 0) {
+      for (const pid of decremented) {
+        const qty = verifiedItems.find((i) => i.productId === pid)?.quantity ?? 0;
+        if (qty > 0) {
+          await ProductModel.findByIdAndUpdate(pid, { $inc: { stock: qty } }).catch(() => {});
+        }
+      }
+    }
     console.error("POST /api/orders:", e);
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
