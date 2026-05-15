@@ -1,9 +1,14 @@
 import type { Order } from "@/types/models";
 import { formatPrice } from "@/lib/currency";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "447700000000";
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+
+if (!WHATSAPP_NUMBER && process.env.NODE_ENV === "production") {
+  console.error("NEXT_PUBLIC_WHATSAPP_NUMBER is not set");
+}
 
 export function generateWhatsAppLink(order: Order): string {
+  if (!WHATSAPP_NUMBER) return "#";
   const itemLines = order.items
     .map((item) => `• ${item.name} x${item.quantity} — ${formatPrice(item.price * item.quantity)}`)
     .join("\n");

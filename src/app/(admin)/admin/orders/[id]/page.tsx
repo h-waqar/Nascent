@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Order } from "@/types/models";
 import { formatPrice } from "@/lib/currency";
+import { shortRef } from "@/lib/orderRef";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { OrderStatusManager } from "@/components/admin/OrderStatusManager";
 
@@ -26,7 +27,7 @@ export default async function AdminOrderDetailPage({
   const order = await getOrder(id);
   if (!order) notFound();
 
-  const orderRef = `#${order.id.slice(-4).toUpperCase()}`;
+  const orderRef = `#${shortRef(order.id)}`;
   const formattedDate = new Date(order.createdAt).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",

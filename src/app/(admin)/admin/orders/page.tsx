@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Order, OrderStatus } from "@/types/models";
 import { ORDER_STATUSES } from "@/lib/orderStatus";
 import { formatPrice } from "@/lib/currency";
+import { shortRef } from "@/lib/orderRef";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 
@@ -103,7 +104,7 @@ export default function AdminOrdersPage() {
                 key={o.id}
                 className="h-[48px] px-4 border-b border-black text-[13px] hover:bg-black hover:text-white transition-none flex items-center"
               >
-                <span className="w-[100px] font-semibold">#{o.id.slice(-4).toUpperCase()}</span>
+                <span className="w-[100px] font-semibold">#{shortRef(o.id)}</span>
                 <span className="w-[140px]">
                   {new Date(o.createdAt).toLocaleDateString("en-GB", {
                     day: "2-digit",

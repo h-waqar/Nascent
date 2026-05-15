@@ -6,6 +6,7 @@ import { OrderModel } from "@/models";
 import mongoose from "mongoose";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { formatPrice } from "@/lib/currency";
+import { formatOrderRef } from "@/lib/orderRef";
 
 export const metadata = { title: "Invoice — Nascent" };
 
@@ -30,7 +31,7 @@ export default async function InvoicePage({ params }: Props) {
   if (!isAdmin && order.userId !== userId) redirect("/orders");
 
   const orderId = order._id.toString();
-  const orderNumber = `#NSC-${orderId.slice(-4).toUpperCase()}`;
+  const orderNumber = formatOrderRef(orderId);
   const createdAt = new Date(order.createdAt as Date).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "long",

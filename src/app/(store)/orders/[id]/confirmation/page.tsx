@@ -6,6 +6,7 @@ import { use } from "react";
 import type { Order } from "@/types/models";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/currency";
+import { formatOrderRef } from "@/lib/orderRef";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -67,7 +68,7 @@ export default function OrderConfirmationPage({ params }: Props) {
     );
   }
 
-  const orderNumber = `#NSC-${order.id.slice(-4).toUpperCase()}`;
+  const orderNumber = formatOrderRef(order.id);
   const whatsappLink = generateWhatsAppLink(order);
   const isBankTransfer = order.paymentMethod === "bank_transfer";
 
