@@ -21,7 +21,7 @@ export default function AdminSettingsPage() {
   const [savingBank, setSavingBank] = useState(false);
   const [savingToggle, setSavingToggle] = useState<"cod" | "bt" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [showSaved, setShowSaved] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -90,7 +90,8 @@ export default function AdminSettingsPage() {
         accountNumber: bank.accountNumber.trim(),
         iban: bank.iban.trim(),
       });
-      setSavedAt(Date.now());
+      setShowSaved(true);
+      setTimeout(() => setShowSaved(false), 3000);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Save failed");
     } finally {
@@ -205,7 +206,7 @@ export default function AdminSettingsPage() {
               >
                 {savingBank ? "Saving…" : "Save Details"}
               </button>
-              {savedAt && Date.now() - savedAt < 3000 && (
+              {showSaved && (
                 <span className="text-[11px] uppercase tracking-[0.1em] text-black">Saved</span>
               )}
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export interface ProductImageUploadProps {
   /** Existing image URL (edit mode) — shown in the preview when no new file is selected */
@@ -15,11 +15,27 @@ const ACCEPTED = "image/jpeg,image/png";
 export function ProductImageUpload({ existingUrl, onFileChange }: ProductImageUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(existingUrl ?? null);
   const [error, setError] = useState<string | null>(null);
+  // Track the current object URL so we can revoke it when it changes or on unmount.
+  const objectUrlRef = useRef<string | null>(null);
+
+  // Revoke the object URL when the component unmounts to avoid memory leaks.
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setError(null);
     const file = e.target.files?.[0] ?? null;
     if (!file) {
+      // Revoke previous object URL if there was one, then revert to existing URL.
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
       setPreviewUrl(existingUrl ?? null);
       onFileChange(null);
       return;
@@ -34,7 +50,12 @@ export function ProductImageUpload({ existingUrl, onFileChange }: ProductImageUp
       onFileChange(null);
       return;
     }
+    // Revoke the previous object URL before creating a new one.
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+    }
     const objectUrl = URL.createObjectURL(file);
+    objectUrlRef.current = objectUrl;
     setPreviewUrl(objectUrl);
     onFileChange(file);
   }

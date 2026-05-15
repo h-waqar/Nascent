@@ -91,7 +91,7 @@ export default function CheckoutPage() {
       line2: form.line2 || undefined,
       city: form.city,
       postalCode: form.postalCode,
-      country: "GB",
+      country: "PK",
       phone: form.phone,
     };
 
