@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export interface StatsCardProps {
   label: string;
-  value: string;        // already formatted (e.g. "£12,480" or "37")
+  value: string;        // already formatted (e.g. "Rs. 12,480" or "37")
   subLabel?: string;
   emphasized?: boolean; // true → border-[2px] (Low Stock when count > 0)
 }

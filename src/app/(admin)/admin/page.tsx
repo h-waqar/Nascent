@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 import type { OrderStatus } from "@/types/models";
+import { formatPrice } from "@/lib/currency";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { StatsCard } from "@/components/admin/StatsCard";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -40,8 +41,8 @@ export default async function AdminDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           <StatsCard
             label="TOTAL REVENUE"
-            value={`£${stats.revenue.allTime.toLocaleString("en-GB", { maximumFractionDigits: 0 })}`}
-            subLabel={`£${stats.revenue.thisMonth.toLocaleString("en-GB", { maximumFractionDigits: 0 })} this month`}
+            value={formatPrice(stats.revenue.allTime)}
+            subLabel={`${formatPrice(stats.revenue.thisMonth)} this month`}
           />
           <StatsCard
             label="TOTAL ORDERS"
@@ -130,7 +131,7 @@ export default async function AdminDashboardPage() {
                     {new Date(o.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                   </span>
                   <span className="flex-1">{o.shippingAddress.fullName}</span>
-                  <span className="w-[100px] text-right">£{o.total.toFixed(2)}</span>
+                  <span className="w-[100px] text-right">{formatPrice(o.total)}</span>
                   <span className="w-[140px]">
                     <StatusBadge status={o.status} />
                   </span>
@@ -168,7 +169,7 @@ export default async function AdminDashboardPage() {
                 >
                   <span className="flex-1 font-semibold">{p.name}</span>
                   <span className="w-[120px] text-right">{p.unitsSold}</span>
-                  <span className="w-[120px] text-right">£{p.revenue.toFixed(2)}</span>
+                  <span className="w-[120px] text-right">{formatPrice(p.revenue)}</span>
                 </div>
               ))
             )}
