@@ -60,10 +60,10 @@ describe("Mongoose models", () => {
     const accountNamePath = SettingsModel.schema.path("accountName") as unknown as {
       instance: string;
     };
-    const sortCodePath = SettingsModel.schema.path("sortCode") as unknown as {
+    const ibanPath = SettingsModel.schema.path("iban") as unknown as {
       instance: string;
     };
     expect(accountNamePath.instance).toBe("String");
-    expect(sortCodePath.instance).toBe("String");
+    expect(ibanPath.instance).toBe("String");
   });
 });

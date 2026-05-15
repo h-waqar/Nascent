@@ -27,20 +27,20 @@ const { GET, PUT } = await import("@/app/api/admin/settings/route");
 
 const MOCK_DOC = {
   _id: { toString: () => "abc123" },
+  bankName: "Barclays",
   accountName: "NASCENT PERFUMES LTD",
   accountNumber: "12345678",
-  sortCode: "10-20-30",
-  bankName: "Barclays",
+  iban: "PK36SCBL0000001123456702",
   codEnabled: true,
   bankTransferEnabled: true,
   updatedAt: new Date("2026-01-15T12:00:00Z"),
 };
 
 const DEFAULT_SETTINGS = {
+  bankName: "",
   accountName: "",
   accountNumber: "",
-  sortCode: "",
-  bankName: "",
+  iban: "",
   codEnabled: true,
   bankTransferEnabled: true,
 };
@@ -65,7 +65,7 @@ describe("GET /api/admin/settings", () => {
     expect(body.settings.id).toBe("abc123");
     expect(body.settings.accountName).toBe("NASCENT PERFUMES LTD");
     expect(body.settings.accountNumber).toBe("12345678");
-    expect(body.settings.sortCode).toBe("10-20-30");
+    expect(body.settings.iban).toBe("PK36SCBL0000001123456702");
     expect(body.settings.bankName).toBe("Barclays");
     expect(body.settings.codEnabled).toBe(true);
     expect(body.settings.bankTransferEnabled).toBe(true);
