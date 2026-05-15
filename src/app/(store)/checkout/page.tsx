@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,12 +8,14 @@ import { useCartStore } from "@/lib/cart";
 import type { PaymentMethod, ShippingAddress } from "@/types/models";
 import { formatPrice } from "@/lib/currency";
 
-const BANK_DETAILS = {
-  accountName: "NASCENT PERFUMES LTD",
-  accountNumber: "8899 0011 2233",
-  bankName: "First Minimal Bank",
-  sortCode: "44-55-66",
-};
+interface PublicSettings {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  iban: string;
+  codEnabled: boolean;
+  bankTransferEnabled: boolean;
+}
 
 interface FormState {
   email: string;
@@ -47,6 +49,14 @@ export default function CheckoutPage() {
   const [form, setForm] = useState<FormState>(INITIAL);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bankSettings, setBankSettings] = useState<PublicSettings | null>(null);
+
+  useEffect(() => {
+    fetch("/api/settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setBankSettings(d.settings ?? null))
+      .catch(() => setBankSettings(null));
+  }, []);
 
   const subtotal = total();
   const shipping = 5;
@@ -253,10 +263,10 @@ export default function CheckoutPage() {
                     Bank Details
                   </p>
                   {[
-                    ["Account Name", BANK_DETAILS.accountName],
-                    ["Account Number", BANK_DETAILS.accountNumber],
-                    ["Bank", BANK_DETAILS.bankName],
-                    ["Sort Code", BANK_DETAILS.sortCode],
+                    ["Institution", bankSettings?.bankName ?? "—"],
+                    ["Account Name", bankSettings?.accountName ?? "—"],
+                    ["Account Number", bankSettings?.accountNumber ?? "—"],
+                    ["IBAN", bankSettings?.iban ?? "—"],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between border-b border-[#e0e0e0] pb-2">
                       <span className="text-[11px] uppercase tracking-[0.1em] text-[#4c4546]">{label}</span>

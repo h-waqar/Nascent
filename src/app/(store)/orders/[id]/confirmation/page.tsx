@@ -11,18 +11,28 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-const BANK_DETAILS = {
-  accountName: "NASCENT PERFUMES LTD",
-  accountNumber: "8899 0011 2233",
-  bankName: "First Minimal Bank",
-  sortCode: "44-55-66",
-};
+interface PublicSettings {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  iban: string;
+  codEnabled: boolean;
+  bankTransferEnabled: boolean;
+}
 
 export default function OrderConfirmationPage({ params }: Props) {
   const { id } = use(params);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [bankSettings, setBankSettings] = useState<PublicSettings | null>(null);
+
+  useEffect(() => {
+    fetch("/api/settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setBankSettings(d.settings ?? null))
+      .catch(() => setBankSettings(null));
+  }, []);
 
   useEffect(() => {
     fetch(`/api/orders/${id}`)
@@ -110,10 +120,10 @@ export default function OrderConfirmationPage({ params }: Props) {
             </h2>
             <div className="space-y-3 mb-6">
               {[
-                ["Institution", BANK_DETAILS.bankName],
-                ["Account Name", BANK_DETAILS.accountName],
-                ["Account Number", BANK_DETAILS.accountNumber],
-                ["Sort Code", BANK_DETAILS.sortCode],
+                ["Institution", bankSettings?.bankName ?? "—"],
+                ["Account Name", bankSettings?.accountName ?? "—"],
+                ["Account Number", bankSettings?.accountNumber ?? "—"],
+                ["IBAN", bankSettings?.iban ?? "—"],
                 ["Reference", orderNumber],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between border-b border-[#e0e0e0] pb-2">
