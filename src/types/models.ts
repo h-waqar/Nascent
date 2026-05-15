@@ -16,7 +16,7 @@ export interface Product {
   categoryId: string;
   isFeatured?: boolean;
   collection?: string;          // e.g. "NOCTURNAL COLLECTION // 004"
-  intensity?: "Subtle" | "Moderate" | "Intense";
+  intensity?: "Subtle" | "Light" | "Moderate" | "Strong" | "Intense";
   volume?: string;              // e.g. "50ml Extrait de Parfum"
   topNote?: string;
   heartNote?: string;

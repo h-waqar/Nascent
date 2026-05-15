@@ -16,7 +16,7 @@ export const CreateProductSchema = z.object({
   heartNote: z.string().optional(),
   baseNote: z.string().optional(),
   volume: z.string().optional(),
-  intensity: z.enum(["Subtle", "Moderate", "Intense"]).optional(),
+  intensity: z.enum(["Subtle", "Light", "Moderate", "Strong", "Intense"]).optional(),
 });
 
 export const UpdateProductSchema = CreateProductSchema.partial();
