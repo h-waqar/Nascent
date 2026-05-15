@@ -42,11 +42,18 @@ describe("generateWhatsAppLink", () => {
     expect(link).toMatch(/^https:\/\/wa\.me\//);
   });
 
-  it("decoded text contains £ symbol", () => {
+  it("decoded text contains Rs. PKR prefix", () => {
     const link = generateWhatsAppLink(sampleOrder);
     const url = new URL(link);
     const text = decodeURIComponent(url.searchParams.get("text") ?? "");
-    expect(text).toContain("£");
+    expect(text).toContain("Rs.");
+  });
+
+  it("decoded text does NOT contain £ symbol (legacy GBP removed)", () => {
+    const link = generateWhatsAppLink(sampleOrder);
+    const url = new URL(link);
+    const text = decodeURIComponent(url.searchParams.get("text") ?? "");
+    expect(text).not.toContain("£");
   });
 
   it("decoded text does NOT contain $ symbol", () => {
