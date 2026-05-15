@@ -61,7 +61,10 @@ export async function POST(req: NextRequest) {
         { status: 409 }
       );
     }
-    const created = await ProductModel.create(parsed.data);
+    const createData = Object.fromEntries(
+      Object.entries(parsed.data).filter(([, v]) => v !== null && v !== undefined)
+    );
+    const created = await ProductModel.create(createData);
     const rawObj = (created.toObject ? created.toObject() : created) as Record<string, unknown>;
     return NextResponse.json(
       {

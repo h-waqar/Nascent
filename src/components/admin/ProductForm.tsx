@@ -29,8 +29,9 @@ interface FormState {
   heartNote: string;
   baseNote: string;
   intensity: string;      // "" or one of INTENSITY_OPTIONS
-  volume: string;         // numeric ml as a string for the input
-  categoryId: string;     // collection dropdown
+  volume: string;
+  collection: string;     // display label e.g. "SIGNATURE COLLECTION // 001"
+  categoryId: string;     // FK to Category document
   isFeatured: boolean;
 }
 
@@ -47,6 +48,7 @@ function fromProduct(p: Product | undefined): FormState {
     baseNote: p?.baseNote ?? "",
     intensity: (p?.intensity && (INTENSITY_OPTIONS as readonly string[]).includes(p.intensity)) ? p.intensity : "",
     volume: p?.volume ?? "",
+    collection: p?.collection ?? "",
     categoryId: p?.categoryId ?? "",
     isFeatured: !!p?.isFeatured,
   };
@@ -118,11 +120,11 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
       // CR-05: Always include optional fields so $unset can clear them in edit mode.
       // null means "clear the field"; a non-empty string means "set the field".
       payload.categoryId = form.categoryId || null;
+      payload.collection = form.collection.trim() || null;
       payload.topNote = form.topNote.trim() || null;
       payload.heartNote = form.heartNote.trim() || null;
       payload.baseNote = form.baseNote.trim() || null;
       payload.intensity = form.intensity || null;
-      // CR-04: Volume is freeform — store exactly what the admin typed, no ml suffix added.
       payload.volume = form.volume.trim() || null;
 
       const url = mode === "new" ? "/api/admin/products" : `/api/admin/products/${initialProduct!.id}`;
@@ -268,18 +270,28 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
             />
           </div>
           <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Collection</label>
-            <select
-              value={form.categoryId}
-              onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Collection Label</label>
+            <input
+              type="text"
+              placeholder="e.g. SIGNATURE COLLECTION // 001"
+              value={form.collection}
+              onChange={(e) => setForm({ ...form, collection: e.target.value })}
               className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-            >
-              <option value="">— None —</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+            />
           </div>
+        </div>
+        <div>
+          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Category</label>
+          <select
+            value={form.categoryId}
+            onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+            className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
+          >
+            <option value="">— None —</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
         <AdminToggle
           checked={form.isFeatured}

@@ -9,14 +9,14 @@ export const CreateProductSchema = z.object({
   stock: z.number().int().min(0),
   images: z.array(z.string().url()).default([]),
   scentNotes: z.array(z.string()).default([]),
-  categoryId: z.string().optional(),
-  collection: z.string().optional(),
+  categoryId: z.string().nullish(),
+  collection: z.string().nullish(),
   isFeatured: z.boolean().default(false),
-  topNote: z.string().optional(),
-  heartNote: z.string().optional(),
-  baseNote: z.string().optional(),
-  volume: z.string().optional(),
-  intensity: z.enum(["Subtle", "Light", "Moderate", "Strong", "Intense"]).optional(),
+  topNote: z.string().nullish(),
+  heartNote: z.string().nullish(),
+  baseNote: z.string().nullish(),
+  volume: z.string().nullish(),
+  intensity: z.enum(["Subtle", "Light", "Moderate", "Strong", "Intense"]).nullish(),
 });
 
 // For updates, optional fields can be explicitly set to null to clear them.
