@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import connectToDatabase from "@/lib/db";
-import { OrderModel } from "@/models";
+import { OrderModel, ProductModel, SettingsModel } from "@/models";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import type { OrderItem, ShippingAddress, PaymentMethod } from "@/types/models";
 
@@ -10,6 +10,8 @@ interface OrderPayload {
   shippingAddress: ShippingAddress;
   paymentMethod: PaymentMethod;
 }
+
+const VALID_PAYMENT_METHODS: PaymentMethod[] = ["cod", "bank_transfer"];
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
@@ -29,15 +31,75 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 5;
-  const total = subtotal + shipping;
+  // CR-03: Validate payment method enum.
+  if (!VALID_PAYMENT_METHODS.includes(paymentMethod)) {
+    return NextResponse.json({ error: "Invalid payment method" }, { status: 400 });
+  }
 
   try {
     await connectToDatabase();
+
+    // CR-03: Enforce admin-configured payment method settings.
+    const settings = await SettingsModel.findOne({}).lean();
+    if (paymentMethod === "cod" && settings && !(settings as Record<string, unknown>).codEnabled) {
+      return NextResponse.json({ error: "Cash on delivery is not available" }, { status: 400 });
+    }
+    if (paymentMethod === "bank_transfer" && settings && !(settings as Record<string, unknown>).bankTransferEnabled) {
+      return NextResponse.json({ error: "Bank transfer is not available" }, { status: 400 });
+    }
+
+    // CR-01: Fetch canonical prices from DB — never trust client-supplied prices.
+    const productIds = items.map((i) => i.productId);
+    const dbProducts = await ProductModel.find({ _id: { $in: productIds } })
+      .select("_id price")
+      .lean();
+    const priceMap = new Map(
+      dbProducts.map((p) => [p._id.toString(), (p as Record<string, unknown>).price as number])
+    );
+
+    // Replace client prices with DB prices and validate all products exist.
+    const verifiedItems: OrderItem[] = [];
+    for (const item of items) {
+      const dbPrice = priceMap.get(item.productId);
+      if (dbPrice === undefined) {
+        return NextResponse.json(
+          { error: `Product not found: ${item.productId}` },
+          { status: 404 }
+        );
+      }
+      verifiedItems.push({ ...item, price: dbPrice });
+    }
+
+    const subtotal = verifiedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const shipping = 5;
+    const total = subtotal + shipping;
+
+    // CR-02: Check and atomically decrement stock before creating the order.
+    // Track decremented product IDs so we can compensate on failure.
+    const decremented: string[] = [];
+    for (const item of verifiedItems) {
+      const updated = await ProductModel.findOneAndUpdate(
+        { _id: item.productId, stock: { $gte: item.quantity } },
+        { $inc: { stock: -item.quantity } },
+        { new: true }
+      );
+      if (!updated) {
+        // Compensate: restore stock for all already-decremented products.
+        for (const pid of decremented) {
+          const qty = verifiedItems.find((i) => i.productId === pid)?.quantity ?? 0;
+          await ProductModel.findByIdAndUpdate(pid, { $inc: { stock: qty } });
+        }
+        return NextResponse.json(
+          { error: `Insufficient stock for: ${item.name}` },
+          { status: 409 }
+        );
+      }
+      decremented.push(item.productId);
+    }
+
     const order = await OrderModel.create({
       userId,
-      items,
+      items: verifiedItems,
       subtotal,
       total,
       status: "pending",
