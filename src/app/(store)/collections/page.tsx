@@ -5,6 +5,7 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Link from "next/link";
 import Image from "next/image";
 import { PRODUCTS } from "@/components/dummy-data";
+import { formatPrice } from "@/lib/currency";
 
 const SCENT_PROFILES = ["Floral", "Woody", "Oriental", "Fresh"];
 const INTENSITIES = ["Subtle", "Moderate", "Intense"];
@@ -172,7 +173,7 @@ export default function CollectionsPage() {
                     {product.name}
                   </span>
                   <span className="font-['Inter'] text-[11px] font-semibold">
-                    ${product.price}
+                    {formatPrice(product.price)}
                   </span>
                 </div>
               </Link>

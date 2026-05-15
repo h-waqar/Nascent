@@ -5,6 +5,7 @@ import Link from "next/link";
 import { use } from "react";
 import type { Order } from "@/types/models";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { formatPrice } from "@/lib/currency";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -90,14 +91,14 @@ export default function OrderConfirmationPage({ params }: Props) {
                   <p className="text-[11px] text-[#4c4546] mt-0.5">Qty: {item.quantity}</p>
                 </div>
                 <p className="text-[13px] font-semibold text-black">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {formatPrice(item.price * item.quantity)}
                 </p>
               </div>
             ))}
           </div>
           <div className="flex justify-between mt-4 pt-4 border-t border-black">
             <span className="text-[13px] uppercase tracking-[0.1em] font-semibold text-black">Total Paid</span>
-            <span className="text-[18px] font-semibold text-black">${order.total.toFixed(2)}</span>
+            <span className="text-[18px] font-semibold text-black">{formatPrice(order.total)}</span>
           </div>
         </div>
 

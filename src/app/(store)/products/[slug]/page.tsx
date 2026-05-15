@@ -6,6 +6,7 @@ import { use } from "react";
 import { PRODUCTS } from "@/components/dummy-data";
 import { useCartStore } from "@/lib/cart";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { formatPrice } from "@/lib/currency";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -102,7 +103,7 @@ export default function ProductPage({ params }: Props) {
               onClick={handleAddToCart}
               className="flex-grow border border-black bg-black text-white py-4 px-8 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-white hover:text-black transition-none"
             >
-              Acquire // ${product.price}
+              {`Acquire // ${formatPrice(product.price)}`}
             </button>
             <button className="border border-black bg-white text-black py-4 px-8 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-black hover:text-white transition-none flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[18px]">favorite</span>

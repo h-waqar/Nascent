@@ -6,6 +6,7 @@ import { Nav } from "@/components/ui/Nav";
 import { Footer } from "@/components/ui/Footer";
 import { PRODUCTS } from "@/components/dummy-data";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { formatPrice } from "@/lib/currency";
 
 export default function Home() {
   const featured = PRODUCTS.filter((p) => p.isFeatured).slice(0, 3);
@@ -159,7 +160,7 @@ export default function Home() {
                       {product.name}
                     </span>
                     <span className="font-['Inter'] text-[11px] font-semibold">
-                      ${product.price}
+                      {formatPrice(product.price)}
                     </span>
                   </div>
                 </Link>

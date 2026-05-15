@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/lib/cart";
 import type { PaymentMethod, ShippingAddress } from "@/types/models";
+import { formatPrice } from "@/lib/currency";
 
 const BANK_DETAILS = {
   accountName: "NASCENT PERFUMES LTD",
@@ -318,7 +319,7 @@ export default function CheckoutPage() {
                   <p className="text-[11px] text-[#4c4546] mt-1">50ml Extrait de Parfum</p>
                 </div>
                 <p className="text-[13px] font-semibold text-black self-center">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {formatPrice(item.price * item.quantity)}
                 </p>
               </div>
             ))}
@@ -327,15 +328,15 @@ export default function CheckoutPage() {
           <div className="border-t border-black pt-6 space-y-3">
             <div className="flex justify-between">
               <span className="text-[12px] uppercase tracking-[0.1em] text-[#4c4546]">Subtotal</span>
-              <span className="text-[12px] font-semibold text-black">${subtotal.toFixed(2)}</span>
+              <span className="text-[12px] font-semibold text-black">{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[12px] uppercase tracking-[0.1em] text-[#4c4546]">Shipping</span>
-              <span className="text-[12px] font-semibold text-black">${shipping.toFixed(2)}</span>
+              <span className="text-[12px] font-semibold text-black">{formatPrice(shipping)}</span>
             </div>
             <div className="flex justify-between border-t border-black pt-4 mt-2">
               <span className="text-[13px] uppercase tracking-[0.1em] font-semibold text-black">Total</span>
-              <span className="text-[18px] font-semibold text-black">${grandTotal.toFixed(2)}</span>
+              <span className="text-[18px] font-semibold text-black">{formatPrice(grandTotal)}</span>
             </div>
           </div>
         </div>

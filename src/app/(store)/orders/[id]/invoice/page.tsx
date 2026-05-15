@@ -5,6 +5,7 @@ import connectToDatabase from "@/lib/db";
 import { OrderModel } from "@/models";
 import mongoose from "mongoose";
 import { PrintButton } from "@/components/ui/PrintButton";
+import { formatPrice } from "@/lib/currency";
 
 export const metadata = { title: "Invoice — Nascent" };
 
@@ -97,9 +98,9 @@ export default async function InvoicePage({ params }: Props) {
           <div key={idx} className="flex border-b border-[#e0e0e0] py-4">
             <span className="flex-1 text-[13px]">{item.name}</span>
             <span className="w-16 text-center text-[13px]">{item.quantity}</span>
-            <span className="w-28 text-right text-[13px]">${item.price.toFixed(2)}</span>
+            <span className="w-28 text-right text-[13px]">{formatPrice(item.price)}</span>
             <span className="w-28 text-right text-[13px]">
-              ${(item.price * item.quantity).toFixed(2)}
+              {formatPrice(item.price * item.quantity)}
             </span>
           </div>
         ))}
@@ -108,12 +109,12 @@ export default async function InvoicePage({ params }: Props) {
         {order.subtotal !== order.total && (
           <div className="flex justify-end gap-8 py-2">
             <span className="text-[13px]">Subtotal</span>
-            <span className="text-[13px] w-28 text-right">${order.subtotal.toFixed(2)}</span>
+            <span className="text-[13px] w-28 text-right">{formatPrice(order.subtotal)}</span>
           </div>
         )}
         <div className="flex justify-end gap-8 pt-4 border-t border-black">
           <span className="text-[13px] font-semibold uppercase tracking-[0.1em]">Total</span>
-          <span className="text-[13px] font-semibold w-28 text-right">${order.total.toFixed(2)}</span>
+          <span className="text-[13px] font-semibold w-28 text-right">{formatPrice(order.total)}</span>
         </div>
       </div>
 
