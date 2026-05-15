@@ -12,6 +12,15 @@ const ProductSchema = new Schema<ProductDoc>(
     images: { type: [String], default: [] },
     scentNotes: { type: [String], default: [] },
     stock: { type: Number, required: true, min: 0, default: 0 },
+    // Optional product fields — previously missing from schema (stripped by strict:true)
+    categoryId: { type: String },
+    isFeatured: { type: Boolean, default: false },
+    collection: { type: String },
+    intensity: { type: String, enum: ["Subtle", "Light", "Moderate", "Strong", "Intense"] },
+    volume: { type: String },
+    topNote: { type: String },
+    heartNote: { type: String },
+    baseNote: { type: String },
   },
   { timestamps: true }
 );

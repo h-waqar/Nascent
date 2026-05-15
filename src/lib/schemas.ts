@@ -19,7 +19,17 @@ export const CreateProductSchema = z.object({
   intensity: z.enum(["Subtle", "Light", "Moderate", "Strong", "Intense"]).optional(),
 });
 
-export const UpdateProductSchema = CreateProductSchema.partial();
+// For updates, optional fields can be explicitly set to null to clear them.
+// The API route converts null values into $unset operations so $set doesn't
+// leave stale data when an admin clears a field.
+export const UpdateProductSchema = CreateProductSchema.partial().extend({
+  categoryId: z.string().nullish(),
+  topNote: z.string().nullish(),
+  heartNote: z.string().nullish(),
+  baseNote: z.string().nullish(),
+  intensity: z.enum(["Subtle", "Light", "Moderate", "Strong", "Intense"]).nullish(),
+  volume: z.string().nullish(),
+});
 
 export const UpdateOrderStatusSchema = z.object({
   status: z.enum(ORDER_STATUSES as [string, ...string[]]),

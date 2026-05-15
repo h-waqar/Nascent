@@ -115,12 +115,15 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
         scentNotes: initialProduct?.scentNotes ?? [],
         isFeatured: form.isFeatured,
       };
-      if (form.categoryId) payload.categoryId = form.categoryId;
-      if (form.topNote.trim()) payload.topNote = form.topNote.trim();
-      if (form.heartNote.trim()) payload.heartNote = form.heartNote.trim();
-      if (form.baseNote.trim()) payload.baseNote = form.baseNote.trim();
-      if (form.intensity) payload.intensity = form.intensity;
-      if (form.volume.trim()) payload.volume = `${form.volume}ml`;
+      // CR-05: Always include optional fields so $unset can clear them in edit mode.
+      // null means "clear the field"; a non-empty string means "set the field".
+      payload.categoryId = form.categoryId || null;
+      payload.topNote = form.topNote.trim() || null;
+      payload.heartNote = form.heartNote.trim() || null;
+      payload.baseNote = form.baseNote.trim() || null;
+      payload.intensity = form.intensity || null;
+      // CR-04: Volume is freeform — store exactly what the admin typed, no ml suffix added.
+      payload.volume = form.volume.trim() || null;
 
       const url = mode === "new" ? "/api/admin/products" : `/api/admin/products/${initialProduct!.id}`;
       const method = mode === "new" ? "POST" : "PUT";
@@ -255,12 +258,11 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">Specs</h2>
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Volume (ml)</label>
+            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Volume</label>
             <input
-              type="number"
-              min="0"
-              step="1"
-              value={form.volume.replace(/ml$/, "")}
+              type="text"
+              placeholder="e.g. 50ml Extrait de Parfum"
+              value={form.volume}
               onChange={(e) => setForm({ ...form, volume: e.target.value })}
               className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
             />

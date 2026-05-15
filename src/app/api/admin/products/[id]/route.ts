@@ -76,9 +76,24 @@ export async function PUT(
         );
       }
     }
+    // Split parsed data into fields to $set vs. null fields to $unset.
+    // This allows admins to explicitly clear optional fields (e.g., intensity → null).
+    const setFields: Record<string, unknown> = {};
+    const unsetFields: Record<string, 1> = {};
+    for (const [key, value] of Object.entries(parsed.data)) {
+      if (value === null || value === undefined) {
+        unsetFields[key] = 1;
+      } else {
+        setFields[key] = value;
+      }
+    }
+    const updateOp: Record<string, unknown> = {};
+    if (Object.keys(setFields).length > 0) updateOp.$set = setFields;
+    if (Object.keys(unsetFields).length > 0) updateOp.$unset = unsetFields;
+
     const updated = await ProductModel.findByIdAndUpdate(
       id,
-      { $set: parsed.data },
+      updateOp,
       { new: true, runValidators: true }
     ).lean();
     if (!updated) {
