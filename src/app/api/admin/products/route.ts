@@ -47,7 +47,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  console.log("[DEBUG POST] body received:", JSON.stringify(body));
   const parsed = CreateProductSchema.safeParse(body);
+  console.log("[DEBUG POST] parsed.success:", parsed.success);
+  if (parsed.success) console.log("[DEBUG POST] parsed.data:", JSON.stringify(parsed.data));
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 });
   }
