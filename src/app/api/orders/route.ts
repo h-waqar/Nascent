@@ -121,7 +121,17 @@ export async function POST(req: NextRequest) {
       updatedAt: order.updatedAt.toISOString(),
     };
 
-    const whatsappLink = generateWhatsAppLink(orderPlain);
+    // Fetch whatsapp number from settings (DB wins; env fallback for cold-start)
+    let waNumber: string = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
+    try {
+      const settingsDoc = await SettingsModel.findOne({}).lean();
+      if (settingsDoc && (settingsDoc as Record<string, unknown>).whatsappNumber) {
+        waNumber = (settingsDoc as Record<string, unknown>).whatsappNumber as string;
+      }
+    } catch {
+      // non-fatal — env fallback already set
+    }
+    const whatsappLink = generateWhatsAppLink(orderPlain, waNumber);
     await OrderModel.findByIdAndUpdate(order._id, { whatsappLink });
 
     return NextResponse.json({ order: { ...orderPlain, whatsappLink } }, { status: 201 });

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { use } from "react";
 import type { Order } from "@/types/models";
-import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/currency";
 import { formatOrderRef } from "@/lib/orderRef";
 
@@ -69,7 +68,7 @@ export default function OrderConfirmationPage({ params }: Props) {
   }
 
   const orderNumber = formatOrderRef(order.id);
-  const whatsappLink = generateWhatsAppLink(order);
+  const whatsappLink = order.whatsappLink ?? "#";
   const isBankTransfer = order.paymentMethod === "bank_transfer";
 
   return (
