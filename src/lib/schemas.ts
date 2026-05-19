@@ -41,6 +41,7 @@ export const UpdateSettingsSchema = z.object({
   accountName: z.string().max(200).optional(),
   accountNumber: z.string().max(50).optional(),
   iban: z.string().max(34).optional(),
+  whatsappNumber: z.string().max(20).optional(),
   codEnabled: z.boolean().optional(),
   bankTransferEnabled: z.boolean().optional(),
 });

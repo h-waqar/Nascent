@@ -80,6 +80,7 @@ export interface Settings {
   accountName: string;
   accountNumber: string;
   iban: string;
+  whatsappNumber: string;
   codEnabled: boolean;
   bankTransferEnabled: boolean;
   updatedAt: string; // ISO date string
