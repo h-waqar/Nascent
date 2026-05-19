@@ -31,6 +31,7 @@ const MOCK_DOC = {
   accountName: "NASCENT PERFUMES LTD",
   accountNumber: "12345678",
   iban: "PK36SCBL0000001123456702",
+  whatsappNumber: "923001234567",
   codEnabled: true,
   bankTransferEnabled: true,
   updatedAt: new Date("2026-01-15T12:00:00Z"),
@@ -41,6 +42,7 @@ const DEFAULT_SETTINGS = {
   accountName: "",
   accountNumber: "",
   iban: "",
+  whatsappNumber: "",
   codEnabled: true,
   bankTransferEnabled: true,
 };
@@ -69,6 +71,7 @@ describe("GET /api/admin/settings", () => {
     expect(body.settings.bankName).toBe("Barclays");
     expect(body.settings.codEnabled).toBe(true);
     expect(body.settings.bankTransferEnabled).toBe(true);
+    expect(body.settings.whatsappNumber).toBe("923001234567");
     expect(body.settings.updatedAt).toBe("2026-01-15T12:00:00.000Z");
     expect(body.settings._id).toBeUndefined();
   });
@@ -172,6 +175,32 @@ describe("PUT /api/admin/settings", () => {
     expect(res.status).toBe(400);
     expect(body.error).toBe("Invalid JSON");
     expect(SettingsModel.findOneAndUpdate).not.toHaveBeenCalled();
+  });
+
+  it("persists whatsappNumber via PUT", async () => {
+    vi.mocked(requireAdmin).mockResolvedValue(null);
+    const updatedDoc = {
+      ...MOCK_DOC,
+      whatsappNumber: "921234567890",
+    };
+    vi.mocked(SettingsModel.findOneAndUpdate).mockReturnValue({
+      lean: vi.fn().mockResolvedValue(updatedDoc),
+    } as any);
+
+    const req = new NextRequest("http://localhost/api/admin/settings", {
+      method: "PUT",
+      body: JSON.stringify({ whatsappNumber: "921234567890" }),
+    });
+    const res = await PUT(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.settings.whatsappNumber).toBe("921234567890");
+    expect(SettingsModel.findOneAndUpdate).toHaveBeenCalledWith(
+      {},
+      { $set: { whatsappNumber: "921234567890" } },
+      { upsert: true, new: true, runValidators: true }
+    );
   });
 
   it("returns 403 when requireAdmin denies access for PUT", async () => {
