@@ -16,6 +16,7 @@ const PAGE_SIZE = 10;
 
 export default function AdminOrdersPage() {
   const [filter, setFilter] = useState<FilterValue>("all");
+  const [search, setSearch] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -47,16 +48,31 @@ export default function AdminOrdersPage() {
     };
   }, [filter]);
 
-  const pageCount = Math.max(1, Math.ceil(orders.length / PAGE_SIZE));
+  const filteredOrders = useMemo(() => {
+    if (!search.trim()) return orders;
+    const q = search.trim().toLowerCase().replace(/^#/, "");
+    return orders.filter((o) => shortRef(o.id).toLowerCase().includes(q));
+  }, [orders, search]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));
   const pageOrders = useMemo(
-    () => orders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [orders, page]
+    () => filteredOrders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filteredOrders, page]
   );
 
   return (
     <div className="bg-white min-h-screen">
       <AdminPageHeader title="Orders" />
       <div className="px-8 py-8 space-y-6">
+        {/* Order ID search */}
+        <input
+          type="text"
+          placeholder="Search by order ID…"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="border border-black px-4 h-[40px] text-[13px] w-full max-w-[320px] bg-white text-black placeholder:text-[#9c9c9c] focus:outline-none"
+        />
+
         {/* Status filter chips */}
         <div className="flex flex-wrap gap-2">
           {FILTER_VALUES.map((v) => {
@@ -92,7 +108,7 @@ export default function AdminOrdersPage() {
             <span className="flex-1">Customer</span>
             <span className="w-[120px] text-right">Total</span>
             <span className="w-[140px]">Status</span>
-            <span className="w-[80px] text-right">Action</span>
+            <span className="w-[140px] text-right">Action</span>
           </div>
           {loading ? (
             <div className="px-4 py-3 text-[13px] text-black">Loading…</div>
@@ -117,13 +133,21 @@ export default function AdminOrdersPage() {
                 <span className="w-[140px]">
                   <StatusBadge status={o.status} />
                 </span>
-                <span className="w-[80px] text-right">
+                <span className="w-[140px] text-right flex items-center justify-end gap-3">
                   <Link
                     href={`/admin/orders/${o.id}`}
                     className="text-[11px] font-semibold uppercase tracking-[0.1em] hover:underline transition-none"
                   >
                     View
                   </Link>
+                  <a
+                    href={`/orders/${o.id}/invoice`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-semibold uppercase tracking-[0.1em] hover:underline transition-none"
+                  >
+                    Print
+                  </a>
                 </span>
               </div>
             ))
@@ -133,7 +157,7 @@ export default function AdminOrdersPage() {
         {/* Pagination */}
         <div className="flex items-center justify-between">
           <span className="text-[11px] uppercase tracking-[0.1em] text-black">
-            Page {page} of {pageCount} — {orders.length} order{orders.length === 1 ? "" : "s"}
+            Page {page} of {pageCount} — {filteredOrders.length} order{filteredOrders.length === 1 ? "" : "s"}
           </span>
           <div className="flex gap-2">
             <button
