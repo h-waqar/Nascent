@@ -16,7 +16,8 @@ export interface ProductFormProps {
   initialProduct?: Product;
 }
 
-const INTENSITY_OPTIONS = ["Subtle", "Light", "Moderate", "Strong", "Intense"] as const;
+const INTENSITY_OPTIONS = ["Light", "Moderate", "Strong", "Intense"] as const;
+const SCENT_NOTE_OPTIONS = ["Floral", "Woody", "Oriental", "Fresh", "Citrus", "Spicy", "Musk", "Aquatic"] as const;
 
 interface FormState {
   name: string;
@@ -33,6 +34,7 @@ interface FormState {
   collection: string;     // display label e.g. "SIGNATURE COLLECTION // 001"
   categoryId: string;     // FK to Category document
   isFeatured: boolean;
+  scentNotes: string[];
 }
 
 function fromProduct(p: Product | undefined): FormState {
@@ -51,6 +53,7 @@ function fromProduct(p: Product | undefined): FormState {
     collection: p?.collection ?? "",
     categoryId: p?.categoryId ?? "",
     isFeatured: !!p?.isFeatured,
+    scentNotes: p?.scentNotes ?? [],
   };
 }
 
@@ -58,7 +61,8 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
   const router = useRouter();
   const [form, setForm] = useState<FormState>(() => fromProduct(initialProduct));
   const [categories, setCategories] = useState<Category[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>(initialProduct?.images ?? []);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -100,11 +104,9 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
     setSubmitting(true);
     setError(null);
     try {
-      // 1. Upload image FIRST if a new file was picked (per D-07)
-      let imageUrl: string | undefined = initialProduct?.images?.[0];
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
-      }
+      // 1. Upload all new files in parallel
+      const uploadedUrls = await Promise.all(newImageFiles.map(uploadImage));
+      const allImages = [...existingImages, ...uploadedUrls];
 
       // 2. Build the payload — convert numeric strings, omit empty optionals
       const payload: Record<string, unknown> = {
@@ -113,8 +115,8 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
         description: form.description.trim(),
         price: Number(form.price),
         stock: Number(form.stock),
-        images: imageUrl ? [imageUrl] : [],
-        scentNotes: initialProduct?.scentNotes ?? [],
+        images: allImages,
+        scentNotes: form.scentNotes,
         isFeatured: form.isFeatured,
       };
       // CR-05: Always include optional fields so $unset can clear them in edit mode.
@@ -253,6 +255,35 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
             ))}
           </select>
         </div>
+        <div>
+          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-3 block">Scent Profile</label>
+          <div className="flex flex-wrap gap-2">
+            {SCENT_NOTE_OPTIONS.map((note) => {
+              const checked = form.scentNotes.includes(note);
+              return (
+                <button
+                  key={note}
+                  type="button"
+                  onClick={() => {
+                    setForm((f) => ({
+                      ...f,
+                      scentNotes: checked
+                        ? f.scentNotes.filter((n) => n !== note)
+                        : [...f.scentNotes, note],
+                    }));
+                  }}
+                  className={`px-3 h-[28px] text-[11px] font-semibold uppercase tracking-[0.1em] border transition-none ${
+                    checked
+                      ? "bg-black text-white border-black"
+                      : "bg-white text-black border-black hover:bg-black hover:text-white"
+                  }`}
+                >
+                  {note}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       {/* SECTION 4 — Specs */}
@@ -303,9 +334,11 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
       {/* SECTION 5 — Media */}
       <section className="space-y-6">
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">Media</h2>
+        <p className="text-[11px] text-[#4c4546]">First image is the main product image. Hover to remove.</p>
         <ProductImageUpload
-          existingUrl={initialProduct?.images?.[0]}
-          onFileChange={setImageFile}
+          existingUrls={existingImages}
+          onExistingUrlsChange={setExistingImages}
+          onNewFilesChange={setNewImageFiles}
         />
       </section>
 
