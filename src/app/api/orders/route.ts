@@ -74,7 +74,9 @@ export async function POST(req: NextRequest) {
     }
 
     const subtotal = verifiedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shipping = 5;
+    const shipping = typeof (settings as Record<string, unknown>)?.shippingCost === "number"
+      ? ((settings as Record<string, unknown>).shippingCost as number)
+      : 0;
     const total = subtotal + shipping;
 
     // CR-02: Check and atomically decrement stock before creating the order.

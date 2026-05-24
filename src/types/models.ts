@@ -14,6 +14,7 @@ export interface Product {
   images: string[];
   scentNotes: string[];        // e.g. ["Floral", "Fresh"] — shown in collections grid
   categoryId: string;
+  hidden?: boolean;
   isFeatured?: boolean;
   collection?: string;          // e.g. "NOCTURNAL COLLECTION // 004"
   intensity?: "Subtle" | "Light" | "Moderate" | "Strong" | "Intense";
@@ -81,6 +82,7 @@ export interface Settings {
   accountNumber: string;
   iban: string;
   whatsappNumber: string;
+  shippingCost: number;
   codEnabled: boolean;
   bankTransferEnabled: boolean;
   updatedAt: string; // ISO date string

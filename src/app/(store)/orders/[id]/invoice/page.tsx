@@ -107,12 +107,16 @@ export default async function InvoicePage({ params }: Props) {
         ))}
 
         {/* Totals */}
-        {order.subtotal !== order.total && (
-          <div className="flex justify-end gap-8 py-2">
-            <span className="text-[13px]">Subtotal</span>
-            <span className="text-[13px] w-28 text-right">{formatPrice(order.subtotal)}</span>
-          </div>
-        )}
+        <div className="flex justify-end gap-8 py-2">
+          <span className="text-[13px]">Subtotal</span>
+          <span className="text-[13px] w-28 text-right">{formatPrice(order.subtotal)}</span>
+        </div>
+        <div className="flex justify-end gap-8 py-2">
+          <span className="text-[13px]">Shipping</span>
+          <span className="text-[13px] w-28 text-right">
+            {order.total - order.subtotal === 0 ? "Free" : formatPrice(order.total - order.subtotal)}
+          </span>
+        </div>
         <div className="flex justify-end gap-8 pt-4 border-t border-black">
           <span className="text-[13px] font-semibold uppercase tracking-[0.1em]">Total</span>
           <span className="text-[13px] font-semibold w-28 text-right">{formatPrice(order.total)}</span>

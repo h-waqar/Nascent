@@ -11,7 +11,7 @@ export async function GET(
   try {
     await connectToDatabase();
     const p = await ProductModel.findOne({ slug }).lean();
-    if (!p) {
+    if (!p || (p as unknown as Record<string, unknown>).hidden) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
     const raw = p as unknown as Record<string, unknown>;

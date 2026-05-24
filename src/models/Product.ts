@@ -14,6 +14,7 @@ const ProductSchema = new Schema<ProductDoc>(
     stock: { type: Number, required: true, min: 0, default: 0 },
     // Optional product fields — previously missing from schema (stripped by strict:true)
     categoryId: { type: String },
+    hidden: { type: Boolean, default: false },
     isFeatured: { type: Boolean, default: false },
     collection: { type: String },
     intensity: { type: String, enum: ["Subtle", "Light", "Moderate", "Strong", "Intense"] },

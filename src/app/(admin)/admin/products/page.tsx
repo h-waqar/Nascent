@@ -16,6 +16,7 @@ export default function AdminProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -40,6 +41,23 @@ export default function AdminProductsPage() {
   }
 
   useEffect(() => { load(); }, []);
+
+  async function handleToggleHidden(id: string, currentHidden: boolean) {
+    setTogglingId(id);
+    try {
+      const res = await fetch(`/api/admin/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hidden: !currentHidden }),
+      });
+      if (!res.ok) throw new Error("Toggle failed");
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Toggle failed");
+    } finally {
+      setTogglingId(null);
+    }
+  }
 
   async function handleDelete() {
     if (!pendingDelete) return;
@@ -82,8 +100,8 @@ export default function AdminProductsPage() {
             <span className="flex-1">Name</span>
             <span className="w-[120px] text-right">Price</span>
             <span className="w-[80px] text-right">Stock</span>
-            <span className="w-[180px]">Collection</span>
-            <span className="w-[180px] text-right">Actions</span>
+            <span className="w-[160px]">Collection</span>
+            <span className="w-[220px] text-right">Actions</span>
           </div>
           {loading ? (
             <div className="px-4 py-3 text-[13px] text-black">Loading…</div>
@@ -102,13 +120,28 @@ export default function AdminProductsPage() {
                     <span className="w-[48px] h-[48px] inline-block border border-current bg-current opacity-10" />
                   )}
                 </span>
-                <span className="flex-1 font-semibold">{p.name}</span>
+                <span className="flex-1 font-semibold flex items-center gap-2">
+                  {p.name}
+                  {p.hidden && (
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.15em] border border-current px-1.5 py-0.5 opacity-60">
+                      Hidden
+                    </span>
+                  )}
+                </span>
                 <span className="w-[120px] text-right">{formatPrice(p.price)}</span>
                 <span className="w-[80px] text-right">
                   <LowStockBadge stock={p.stock} />
                 </span>
-                <span className="w-[180px]">{categoriesById[p.categoryId] ?? p.collection ?? "—"}</span>
-                <span className="w-[180px] text-right flex items-center justify-end gap-4">
+                <span className="w-[160px]">{categoriesById[p.categoryId] ?? p.collection ?? "—"}</span>
+                <span className="w-[220px] text-right flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    disabled={togglingId === p.id}
+                    onClick={() => handleToggleHidden(p.id, !!p.hidden)}
+                    className="text-[11px] font-semibold uppercase tracking-[0.1em] hover:underline transition-none disabled:opacity-40"
+                  >
+                    {togglingId === p.id ? "…" : p.hidden ? "Show" : "Hide"}
+                  </button>
                   <Link
                     href={`/admin/products/${p.id}/edit`}
                     className="text-[11px] font-semibold uppercase tracking-[0.1em] hover:underline transition-none"

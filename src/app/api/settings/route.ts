@@ -13,6 +13,8 @@ const DEFAULT_AUTHENTICATED = {
   accountName: "",
   accountNumber: "",
   iban: "",
+  whatsappNumber: "",
+  shippingCost: 0,
   codEnabled: true,
   bankTransferEnabled: true,
 };
@@ -54,6 +56,8 @@ export async function GET(_req: NextRequest) {
         accountName: (d.accountName as string) ?? "",
         accountNumber: (d.accountNumber as string) ?? "",
         iban: (d.iban as string) ?? "",
+        whatsappNumber: (d.whatsappNumber as string) ?? "",
+        shippingCost: typeof d.shippingCost === "number" ? d.shippingCost : 0,
         codEnabled,
         bankTransferEnabled,
       },

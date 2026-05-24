@@ -13,6 +13,7 @@ const SettingsSchema = new Schema<SettingsDoc>(
     accountNumber: { type: String, default: "" },
     iban: { type: String, default: "" },
     whatsappNumber: { type: String, default: "" },
+    shippingCost: { type: Number, default: 0 },
     codEnabled: { type: Boolean, default: true },
     bankTransferEnabled: { type: Boolean, default: true },
   },

@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    const filter: Record<string, unknown> = {};
+    const filter: Record<string, unknown> = { hidden: { $ne: true } };
     if (category) filter.categoryId = category;
     if (q) filter.scentNotes = { $regex: q, $options: "i" };
     if (featured === "true") filter.isFeatured = true;

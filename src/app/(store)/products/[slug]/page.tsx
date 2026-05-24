@@ -55,14 +55,16 @@ export default function ProductPage({ params }: Props) {
       <section className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-80px)] border-b border-black">
         {/* Left: full-bleed image */}
         <div className="border-r border-black bg-[#f9f9f9] relative overflow-hidden min-h-[60vh] lg:min-h-0">
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover grayscale"
-          />
+          {product.images[0] && (
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover grayscale"
+            />
+          )}
         </div>
 
         {/* Right: details */}

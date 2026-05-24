@@ -13,6 +13,8 @@ interface PublicSettings {
   accountName: string;
   accountNumber: string;
   iban: string;
+  whatsappNumber?: string;
+  shippingCost?: number;
   codEnabled: boolean;
   bankTransferEnabled: boolean;
 }
@@ -59,7 +61,7 @@ export default function CheckoutPage() {
   }, []);
 
   const subtotal = total();
-  const shipping = 5;
+  const shipping = bankSettings?.shippingCost ?? 0;
   const grandTotal = subtotal + shipping;
 
   function set(field: keyof FormState, value: string) {
@@ -217,45 +219,55 @@ export default function CheckoutPage() {
                 Payment Method
               </legend>
 
-              <label
-                className={`flex items-center gap-4 border p-4 cursor-pointer transition-none ${
-                  form.paymentMethod === "cod" ? "border-black bg-black text-white" : "border-black bg-white text-black"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="cod"
-                  checked={form.paymentMethod === "cod"}
-                  onChange={() => set("paymentMethod", "cod")}
-                  className="sr-only"
-                />
-                <span className="material-symbols-outlined text-[20px]">local_shipping</span>
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">Cash on Delivery</p>
-                  <p className="text-[11px] opacity-70 mt-0.5">Pay when your order arrives</p>
-                </div>
-              </label>
+              {bankSettings && !bankSettings.codEnabled && !bankSettings.bankTransferEnabled && (
+                <p className="text-[12px] text-[#4c4546] border border-black p-4">
+                  No payment methods are currently available. Please contact us for assistance.
+                </p>
+              )}
 
-              <label
-                className={`flex items-center gap-4 border p-4 cursor-pointer transition-none ${
-                  form.paymentMethod === "bank_transfer" ? "border-black bg-black text-white" : "border-black bg-white text-black"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="bank_transfer"
-                  checked={form.paymentMethod === "bank_transfer"}
-                  onChange={() => set("paymentMethod", "bank_transfer")}
-                  className="sr-only"
-                />
-                <span className="material-symbols-outlined text-[20px]">account_balance</span>
-                <div>
-                  <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">Direct Bank Transfer</p>
-                  <p className="text-[11px] opacity-70 mt-0.5">Transfer to our account, confirm via WhatsApp</p>
-                </div>
-              </label>
+              {(!bankSettings || bankSettings.codEnabled) && (
+                <label
+                  className={`flex items-center gap-4 border p-4 cursor-pointer transition-none ${
+                    form.paymentMethod === "cod" ? "border-black bg-black text-white" : "border-black bg-white text-black"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="cod"
+                    checked={form.paymentMethod === "cod"}
+                    onChange={() => set("paymentMethod", "cod")}
+                    className="sr-only"
+                  />
+                  <span className="material-symbols-outlined text-[20px]">local_shipping</span>
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">Cash on Delivery</p>
+                    <p className="text-[11px] opacity-70 mt-0.5">Pay when your order arrives</p>
+                  </div>
+                </label>
+              )}
+
+              {(!bankSettings || bankSettings.bankTransferEnabled) && (
+                <label
+                  className={`flex items-center gap-4 border p-4 cursor-pointer transition-none ${
+                    form.paymentMethod === "bank_transfer" ? "border-black bg-black text-white" : "border-black bg-white text-black"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="bank_transfer"
+                    checked={form.paymentMethod === "bank_transfer"}
+                    onChange={() => set("paymentMethod", "bank_transfer")}
+                    className="sr-only"
+                  />
+                  <span className="material-symbols-outlined text-[20px]">account_balance</span>
+                  <div>
+                    <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">Direct Bank Transfer</p>
+                    <p className="text-[11px] opacity-70 mt-0.5">Transfer to our account, confirm via WhatsApp</p>
+                  </div>
+                </label>
+              )}
 
               {form.paymentMethod === "bank_transfer" && (
                 <div className="border border-black p-6 space-y-3 bg-[#f9f9f9]">
@@ -276,6 +288,16 @@ export default function CheckoutPage() {
                   <p className="text-[11px] text-[#4c4546] pt-2 leading-[1.6]">
                     Please transfer the total amount to the account above. Your order will not ship until we receive payment confirmation via WhatsApp.
                   </p>
+                  {bankSettings?.whatsappNumber && (
+                    <a
+                      href={`https://wa.me/${bankSettings.whatsappNumber}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-[11px] uppercase tracking-[0.15em] font-semibold text-black underline pt-1"
+                    >
+                      Questions? Contact us on WhatsApp →
+                    </a>
+                  )}
                 </div>
               )}
             </fieldset>
@@ -342,7 +364,9 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-[12px] uppercase tracking-[0.1em] text-[#4c4546]">Shipping</span>
-              <span className="text-[12px] font-semibold text-black">{formatPrice(shipping)}</span>
+              <span className="text-[12px] font-semibold text-black">
+                {shipping === 0 ? "Free" : formatPrice(shipping)}
+              </span>
             </div>
             <div className="flex justify-between border-t border-black pt-4 mt-2">
               <span className="text-[13px] uppercase tracking-[0.1em] font-semibold text-black">Total</span>

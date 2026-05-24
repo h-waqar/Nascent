@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS = {
   accountNumber: "",
   iban: "",
   whatsappNumber: "",
+  shippingCost: 0,
   codEnabled: true,
   bankTransferEnabled: true,
 };
@@ -27,6 +28,7 @@ function serialize(doc: Record<string, unknown> | null) {
     accountNumber: (d.accountNumber as string) ?? "",
     iban: (d.iban as string) ?? "",
     whatsappNumber: (d.whatsappNumber as string) ?? "",
+    shippingCost: typeof d.shippingCost === "number" ? d.shippingCost : 0,
     codEnabled: typeof d.codEnabled === "boolean" ? d.codEnabled : true,
     bankTransferEnabled:
       typeof d.bankTransferEnabled === "boolean" ? d.bankTransferEnabled : true,

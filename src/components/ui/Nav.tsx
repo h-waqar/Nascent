@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Show, UserButton, SignInButton } from "@clerk/nextjs";
 import { useCartStore } from "@/lib/cart";
+import { formatPrice } from "@/lib/currency";
 
 const NAV_LINKS = [
   { href: "/collections", label: "Collections" },
@@ -171,7 +172,7 @@ export function Nav() {
                             <p className="text-[11px] text-black mt-0.5">50ml · Extrait de Parfum</p>
                           </div>
                           <p className="text-[13px] font-semibold text-black flex-shrink-0">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            {formatPrice(item.price * item.quantity)}
                           </p>
                         </div>
 
@@ -215,7 +216,7 @@ export function Nav() {
                 <div className="px-6 py-4 space-y-2">
                   <div className="flex justify-between text-[12px] text-black">
                     <span>Subtotal</span>
-                    <span className="font-semibold text-black">${total().toFixed(2)}</span>
+                    <span className="font-semibold text-black">{formatPrice(total())}</span>
                   </div>
                   <div className="flex justify-between text-[12px] text-black">
                     <span>Shipping</span>
@@ -223,7 +224,7 @@ export function Nav() {
                   </div>
                   <div className="flex justify-between text-[15px] font-semibold text-black pt-2 border-t border-black">
                     <span>Total</span>
-                    <span>${total().toFixed(2)}</span>
+                    <span>{formatPrice(total())}</span>
                   </div>
                 </div>
 

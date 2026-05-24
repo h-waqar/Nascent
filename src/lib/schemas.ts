@@ -11,6 +11,7 @@ export const CreateProductSchema = z.object({
   scentNotes: z.array(z.string()).default([]),
   categoryId: z.string().nullish(),
   collection: z.string().nullish(),
+  hidden: z.boolean().optional(),
   isFeatured: z.boolean().default(false),
   topNote: z.string().nullish(),
   heartNote: z.string().nullish(),
@@ -29,6 +30,7 @@ export const UpdateProductSchema = CreateProductSchema.partial().extend({
   baseNote: z.string().nullish(),
   intensity: z.enum(["Subtle", "Light", "Moderate", "Strong", "Intense"]).nullish(),
   volume: z.string().nullish(),
+  hidden: z.boolean().optional(),
 });
 
 export const UpdateOrderStatusSchema = z.object({
@@ -42,6 +44,7 @@ export const UpdateSettingsSchema = z.object({
   accountNumber: z.string().max(50).optional(),
   iban: z.string().max(34).optional(),
   whatsappNumber: z.string().max(20).optional(),
+  shippingCost: z.number().min(0).optional(),
   codEnabled: z.boolean().optional(),
   bankTransferEnabled: z.boolean().optional(),
 });

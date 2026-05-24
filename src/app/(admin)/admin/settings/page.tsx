@@ -10,9 +10,10 @@ interface BankForm {
   accountName: string;
   accountNumber: string;
   iban: string;
+  shippingCost: string;
 }
 
-const EMPTY_BANK: BankForm = { bankName: "", accountName: "", accountNumber: "", iban: "" };
+const EMPTY_BANK: BankForm = { bankName: "", accountName: "", accountNumber: "", iban: "", shippingCost: "0" };
 
 interface ContactForm {
   whatsappNumber: string;
@@ -46,6 +47,7 @@ export default function AdminSettingsPage() {
         accountName: s.accountName ?? "",
         accountNumber: s.accountNumber ?? "",
         iban: s.iban ?? "",
+        shippingCost: String(s.shippingCost ?? 0),
       });
       setContact({ whatsappNumber: s.whatsappNumber ?? "" });
     } catch (e) {
@@ -99,6 +101,7 @@ export default function AdminSettingsPage() {
         accountName: bank.accountName.trim(),
         accountNumber: bank.accountNumber.trim(),
         iban: bank.iban.trim(),
+        shippingCost: Math.max(0, Number(bank.shippingCost) || 0),
       });
       setShowSaved(true);
       setTimeout(() => setShowSaved(false), 3000);
@@ -221,6 +224,19 @@ export default function AdminSettingsPage() {
                 onChange={(e) => setBank({ ...bank, iban: e.target.value.toUpperCase() })}
                 maxLength={34}
                 className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none uppercase"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
+                Shipping Cost (Rs.)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={bank.shippingCost}
+                onChange={(e) => setBank({ ...bank, shippingCost: e.target.value })}
+                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
               />
             </div>
             <div className="flex items-center gap-4 border-t border-black pt-6">
