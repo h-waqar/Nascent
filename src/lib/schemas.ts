@@ -23,7 +23,16 @@ export const CreateProductSchema = z.object({
 // For updates, optional fields can be explicitly set to null to clear them.
 // The API route converts null values into $unset operations so $set doesn't
 // leave stale data when an admin clears a field.
+//
+// IMPORTANT: Fields that carry .default() in CreateProductSchema must be
+// re-declared here as .optional() (no default). If they kept their defaults,
+// Zod would inject those defaults ([] or false) for absent keys during
+// safeParse, causing the PUT handler's $set to overwrite existing DB data
+// with empty values — e.g. a hide/show toggle wiping the images array.
 export const UpdateProductSchema = CreateProductSchema.partial().extend({
+  images: z.array(z.string().url()).optional(),
+  scentNotes: z.array(z.string()).optional(),
+  isFeatured: z.boolean().optional(),
   categoryId: z.string().nullish(),
   topNote: z.string().nullish(),
   heartNote: z.string().nullish(),

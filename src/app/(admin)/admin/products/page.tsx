@@ -100,7 +100,7 @@ export default function AdminProductsPage() {
             <span className="flex-1">Name</span>
             <span className="w-[120px] text-right">Price</span>
             <span className="w-[80px] text-right">Stock</span>
-            <span className="w-[160px]">Collection</span>
+            <span className="w-[160px] text-right">Collection</span>
             <span className="w-[220px] text-right">Actions</span>
           </div>
           {loading ? (
@@ -132,7 +132,7 @@ export default function AdminProductsPage() {
                 <span className="w-[80px] text-right">
                   <LowStockBadge stock={p.stock} />
                 </span>
-                <span className="w-[160px]">{categoriesById[p.categoryId] ?? p.collection ?? "—"}</span>
+                <span className="w-[160px] text-right">{categoriesById[p.categoryId] ?? p.collection ?? "—"}</span>
                 <span className="w-[220px] text-right flex items-center justify-end gap-3">
                   <button
                     type="button"

@@ -16,7 +16,7 @@ export interface ProductFormProps {
   initialProduct?: Product;
 }
 
-const INTENSITY_OPTIONS = ["Light", "Moderate", "Strong", "Intense"] as const;
+const INTENSITY_OPTIONS = ["Subtle", "Moderate", "Intense"] as const;1
 const SCENT_NOTE_OPTIONS = ["Floral", "Woody", "Oriental", "Fresh", "Citrus", "Spicy", "Musk", "Aquatic"] as const;
 
 interface FormState {
