@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Order, OrderStatus } from "@/types/models";
 import { ORDER_STATUSES, isValidTransition } from "@/lib/orderStatus";
+import { generateWhatsAppLink } from "@/lib/whatsapp";
 
 export interface OrderStatusManagerProps {
   order: Order;
@@ -23,7 +24,8 @@ export function OrderStatusManager({ order }: OrderStatusManagerProps) {
   ];
 
   const noChange = pending === order.status;
-  const whatsappHref = order.whatsappLink ?? "#";
+  const customerPhone = order.shippingAddress.phone.replace(/\D/g, "");
+  const whatsappHref = generateWhatsAppLink(order, customerPhone);
 
   async function handleUpdate() {
     if (noChange) return;
