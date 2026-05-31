@@ -16,7 +16,7 @@ export default function Home() {
     fetch("/api/products?featured=true")
       .then((r) => r.json())
       .then((data) => setProducts(data.products ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const featured = products.slice(0, 3);
@@ -41,7 +41,7 @@ export default function Home() {
               playsInline
               preload="auto"
               poster="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=2000"
-              className="object-cover w-full h-full opacity-20 grayscale"
+              className="object-cover w-full h-full opacity-60 grayscale"
             >
               <source
                 src="https://res.cloudinary.com/hwaqar/video/upload/ac_none,f_auto,q_auto/v1780208150/nascent/hero/home_hero_bg.mp4"
@@ -65,81 +65,81 @@ export default function Home() {
 
         {/* ── Featured fragrance ── */}
         {featured1 && (
-        <section
-          ref={featuredReveal.ref}
-          className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${featuredReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
-        >
-          <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            <div className="md:col-span-6 border border-black p-4 h-[600px] relative overflow-hidden">
-              <Image
-                src={featured1.images[0]}
-                alt={featured1.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover grayscale"
-              />
+          <section
+            ref={featuredReveal.ref}
+            className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${featuredReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          >
+            <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              <div className="md:col-span-6 border border-black p-4 h-[600px] relative overflow-hidden">
+                <Image
+                  src={featured1.images[0]}
+                  alt={featured1.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover grayscale"
+                />
+              </div>
+              <div className="md:col-span-5 md:col-start-8 flex flex-col gap-8">
+                <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-black">
+                  {featured1.collection}
+                </p>
+                <h2 className="text-[40px] leading-[1.1] tracking-[-0.02em] font-normal text-black uppercase">
+                  {featured1.name}
+                </h2>
+                <p className="text-[18px] leading-[1.6] text-black">
+                  {featured1.description}
+                </p>
+                <Link
+                  href={`/products/${featured1.slug}`}
+                  className="self-start border border-black bg-white text-black font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold px-8 py-4 hover:bg-black hover:text-white transition-none"
+                >
+                  Discover
+                </Link>
+              </div>
             </div>
-            <div className="md:col-span-5 md:col-start-8 flex flex-col gap-8">
-              <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-black">
-                {featured1.collection}
-              </p>
-              <h2 className="text-[40px] leading-[1.1] tracking-[-0.02em] font-normal text-black uppercase">
-                {featured1.name}
-              </h2>
-              <p className="text-[18px] leading-[1.6] text-black">
-                {featured1.description}
-              </p>
-              <Link
-                href={`/products/${featured1.slug}`}
-                className="self-start border border-black bg-white text-black font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold px-8 py-4 hover:bg-black hover:text-white transition-none"
-              >
-                Discover
-              </Link>
-            </div>
-          </div>
-        </section>
+          </section>
         )}
 
         {/* ── Scent architecture ── */}
         {featured1 && (
-        <section
-          ref={archReveal.ref}
-          className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${archReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
-        >
-          <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-4 flex flex-col justify-center gap-8 pr-8 border-r border-black">
-              <h3 className="text-[24px] leading-[1.2] tracking-[0.05em] font-medium text-black uppercase">
-                Scent Architecture
-              </h3>
-              <div className="flex flex-col gap-4">
-                {[
-                  { label: "Top", value: featured1.topNote },
-                  { label: "Heart", value: featured1.heartNote },
-                  { label: "Base", value: featured1.baseNote },
-                ].map(({ label, value }) => (
-                  <div
-                    key={label}
-                    className="flex justify-between items-center border-b border-black pb-2"
-                  >
-                    <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold text-black">
-                      {label}
-                    </span>
-                    <span className="font-['Inter'] text-[14px] text-black">{value}</span>
-                  </div>
-                ))}
+          <section
+            ref={archReveal.ref}
+            className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${archReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          >
+            <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="md:col-span-4 flex flex-col justify-center gap-8 pr-8 border-r border-black">
+                <h3 className="text-[24px] leading-[1.2] tracking-[0.05em] font-medium text-black uppercase">
+                  Scent Architecture
+                </h3>
+                <div className="flex flex-col gap-4">
+                  {[
+                    { label: "Top", value: featured1.topNote },
+                    { label: "Heart", value: featured1.heartNote },
+                    { label: "Base", value: featured1.baseNote },
+                  ].map(({ label, value }) => (
+                    <div
+                      key={label}
+                      className="flex justify-between items-center border-b border-black pb-2"
+                    >
+                      <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold text-black">
+                        {label}
+                      </span>
+                      <span className="font-['Inter'] text-[14px] text-black">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="md:col-span-8 h-[500px] border border-black p-4 relative overflow-hidden">
+                <Image
+                  src="https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80&w=2000"
+                  alt="Scent notes"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 67vw"
+                  className="object-cover grayscale"
+                />
               </div>
             </div>
-            <div className="md:col-span-8 h-[500px] border border-black p-4 relative overflow-hidden">
-              <Image
-                src="https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80&w=2000"
-                alt="Scent notes"
-                fill
-                sizes="(max-width: 768px) 100vw, 67vw"
-                className="object-cover grayscale"
-              />
-            </div>
-          </div>
-        </section>
+          </section>
         )}
 
         {/* ── Curated product grid ── */}
