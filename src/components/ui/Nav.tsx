@@ -11,8 +11,7 @@ import { formatPrice } from "@/lib/currency";
 const NAV_LINKS = [
   { href: "/collections", label: "Collections" },
   { href: "/about", label: "The House" },
-  { href: "/archive", label: "Archive" },
-  { href: "/stores", label: "Stores" },
+  { href: "/scent-finder", label: "Scent Finder" },
 ];
 
 export function Nav() {
