@@ -11,6 +11,12 @@ type AdminReviewRouteContext = {
   params: Promise<{ id: string }>;
 };
 
+function toStoredStatus(status: "published" | "hidden" | ReviewStatus): ReviewStatus {
+  if (status === "published") return "approved";
+  if (status === "hidden") return "rejected";
+  return status;
+}
+
 export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContext) {
   const authError = await requireAdmin();
   if (authError) return authError;
@@ -44,12 +50,12 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
     }
 
     const currentStatus = existing.status as ReviewStatus;
-    const nextStatus = parsed.data.status ?? currentStatus;
-    const canAppearPublicly = !["hidden", "rejected"].includes(nextStatus);
+    const nextStatus = parsed.data.status ? toStoredStatus(parsed.data.status) : currentStatus;
+    const canAppearPublicly = nextStatus !== "rejected";
 
     if (parsed.data.isFeatured === true && !canAppearPublicly) {
       return NextResponse.json(
-        { error: "Hidden or rejected reviews cannot be featured on the homepage" },
+        { error: "Hidden reviews cannot be featured on the homepage" },
         { status: 400 }
       );
     }
@@ -60,7 +66,7 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
       !canAppearPublicly
     ) {
       return NextResponse.json(
-        { error: "Hidden or rejected reviews cannot receive a homepage rank" },
+        { error: "Hidden reviews cannot receive a homepage rank" },
         { status: 400 }
       );
     }
@@ -68,7 +74,7 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
     const set: Record<string, unknown> = {};
 
     if (parsed.data.status) {
-      set.status = parsed.data.status;
+      set.status = nextStatus;
     }
 
     if (!canAppearPublicly) {
@@ -91,7 +97,7 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
     if (Object.keys(set).length > 0) update.$set = set;
 
     const review = await ReviewModel.findByIdAndUpdate(id, update, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }).lean();
 

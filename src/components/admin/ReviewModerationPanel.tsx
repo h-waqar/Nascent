@@ -39,7 +39,7 @@ const DATE_WINDOWS: Array<{ key: DateWindow; label: string }> = [
 ];
 
 function isHidden(review: Review): boolean {
-  return review.status === "hidden" || review.status === "rejected";
+  return review.status === "rejected";
 }
 
 function getDateFrom(window: DateWindow): string | null {

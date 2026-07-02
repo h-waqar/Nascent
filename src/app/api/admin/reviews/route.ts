@@ -26,6 +26,8 @@ export async function GET(req: NextRequest) {
   if (status && REVIEW_STATUSES.includes(status as (typeof REVIEW_STATUSES)[number])) {
     filter.status = status;
   }
+  if (status === "published") filter.status = { $in: ["approved", "pending"] };
+  if (status === "hidden") filter.status = "rejected";
   if (featured === "true") filter.isFeatured = true;
   if (featured === "false") filter.isFeatured = { $ne: true };
 
@@ -67,9 +69,9 @@ export async function GET(req: NextRequest) {
     const last = page.at(-1) as { updatedAt?: Date } | undefined;
     const [total, published, hidden, featuredCount] = await Promise.all([
       ReviewModel.countDocuments({}),
-      ReviewModel.countDocuments({ status: { $nin: ["hidden", "rejected"] } }),
-      ReviewModel.countDocuments({ status: "hidden" }),
-      ReviewModel.countDocuments({ status: { $nin: ["hidden", "rejected"] }, isFeatured: true }),
+      ReviewModel.countDocuments({ status: { $in: ["approved", "pending"] } }),
+      ReviewModel.countDocuments({ status: "rejected" }),
+      ReviewModel.countDocuments({ status: { $in: ["approved", "pending"] }, isFeatured: true }),
     ]);
 
     return NextResponse.json({

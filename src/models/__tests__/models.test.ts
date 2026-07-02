@@ -82,7 +82,7 @@ describe("Mongoose models", () => {
     expect(uniqueIndex).toBeTruthy();
   });
 
-  it("Review schema defaults submitted reviews to published and not featured", () => {
+  it("Review schema defaults submitted reviews to approved and not featured", () => {
     const statusPath = ReviewModel.schema.path("status") as unknown as {
       enumValues: string[];
       defaultValue: string;
@@ -90,14 +90,8 @@ describe("Mongoose models", () => {
     const featuredPath = ReviewModel.schema.path("isFeatured") as unknown as {
       defaultValue: boolean;
     };
-    expect(statusPath.enumValues).toEqual([
-      "published",
-      "hidden",
-      "pending",
-      "approved",
-      "rejected",
-    ]);
-    expect(statusPath.defaultValue).toBe("published");
+    expect(statusPath.enumValues).toEqual(["pending", "approved", "rejected"]);
+    expect(statusPath.defaultValue).toBe("approved");
     expect(featuredPath.defaultValue).toBe(false);
   });
 

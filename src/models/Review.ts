@@ -35,9 +35,9 @@ const ReviewSchema = new Schema<ReviewDoc>(
     body: { type: String, required: true, minlength: 10, maxlength: 2000 },
     status: {
       type: String,
-      enum: ["published", "hidden", "pending", "approved", "rejected"],
+      enum: ["pending", "approved", "rejected"],
       required: true,
-      default: "published",
+      default: "approved",
       index: true,
     },
     moderationReason: { type: String, maxlength: 500 },

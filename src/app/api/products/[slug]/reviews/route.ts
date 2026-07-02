@@ -10,7 +10,7 @@ type ProductRouteContext = {
   params: Promise<{ slug: string }>;
 };
 
-const PRODUCT_VISIBLE_REVIEW_STATUSES = ["published", "approved", "pending"] as const;
+const PRODUCT_VISIBLE_REVIEW_STATUSES = ["approved", "pending"] as const;
 
 function getDisplayName(sessionClaims: unknown): string {
   const claims = sessionClaims as Record<string, unknown> | null | undefined;
@@ -141,7 +141,7 @@ export async function POST(req: NextRequest, { params }: ProductRouteContext) {
         authorImageUrl: cleanImageUrl(clerkUser?.imageUrl),
         rating: parsed.data.rating,
         body: parsed.data.body,
-        status: "published",
+        status: "approved",
         isFeatured: false,
         featuredRank: null,
       },
@@ -168,7 +168,7 @@ export async function POST(req: NextRequest, { params }: ProductRouteContext) {
         { productId: product._id, userId },
         update,
         {
-          new: true,
+          returnDocument: "after",
           runValidators: true,
           setDefaultsOnInsert: true,
           upsert: true,
@@ -180,7 +180,7 @@ export async function POST(req: NextRequest, { params }: ProductRouteContext) {
         { productId: product._id, userId },
         update,
         {
-          new: true,
+          returnDocument: "after",
           runValidators: true,
         }
       ).lean();

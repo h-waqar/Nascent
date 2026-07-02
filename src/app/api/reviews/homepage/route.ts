@@ -3,7 +3,7 @@ import connectToDatabase from "@/lib/db";
 import { ReviewModel } from "@/models";
 import { toPublicReview } from "@/lib/reviewDtos";
 
-const HOMEPAGE_VISIBLE_REVIEW_STATUSES = ["published", "approved", "pending"] as const;
+const HOMEPAGE_VISIBLE_REVIEW_STATUSES = ["approved", "pending"] as const;
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

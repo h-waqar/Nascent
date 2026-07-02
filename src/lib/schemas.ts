@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ORDER_STATUSES } from "@/lib/orderStatus";
 
-export const REVIEW_STATUSES = ["published", "hidden", "pending", "approved", "rejected"] as const;
+export const REVIEW_STATUSES = ["pending", "approved", "rejected"] as const;
 export const REVIEW_CURATION_STATUSES = ["published", "hidden"] as const;
 
 export const CreateProductSchema = z.object({
