@@ -10,8 +10,32 @@ type ProductReviewsProps = {
   productSlug: string;
 };
 
+function getViewerName(user: ReturnType<typeof useUser>["user"]): string | null {
+  if (!user) return null;
+  const fullName = user.fullName?.trim();
+  if (fullName) return fullName;
+  const names = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
+  return names || null;
+}
+
+function withViewerAvatar(
+  review: PublicReview,
+  viewerName: string | null,
+  viewerImageUrl?: string
+): PublicReview {
+  if (
+    review.authorImageUrl ||
+    !viewerImageUrl ||
+    !viewerName ||
+    review.authorName.trim().toLowerCase() !== viewerName.trim().toLowerCase()
+  ) {
+    return review;
+  }
+  return { ...review, authorImageUrl: viewerImageUrl };
+}
+
 export function ProductReviews({ productSlug }: ProductReviewsProps) {
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn, user } = useUser();
   const [reviews, setReviews] = useState<PublicReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +44,10 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const viewerName = getViewerName(user);
+  const displayReviews = reviews.map((review) =>
+    withViewerAvatar(review, viewerName, user?.imageUrl)
+  );
 
   useEffect(() => {
     let active = true;
@@ -155,12 +183,12 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
               <div className="border-r border-b border-black p-5 font-['Inter'] text-[13px] text-black">
                 Loading reviews…
               </div>
-            ) : reviews.length === 0 ? (
+            ) : displayReviews.length === 0 ? (
               <div className="border-r border-b border-black p-5 font-['Inter'] text-[13px] text-black">
                 No reviews yet.
               </div>
             ) : (
-              reviews.map((review) => (
+              displayReviews.map((review) => (
                 <article key={review.id} className="border-r border-b border-black p-5">
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3 min-w-0">
