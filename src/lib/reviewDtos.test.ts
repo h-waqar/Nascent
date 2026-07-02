@@ -9,6 +9,7 @@ describe("review DTO mappers", () => {
     productName: "Nocturne",
     userId: "user-1",
     authorName: "Customer",
+    authorImageUrl: "https://img.clerk.com/avatar.png",
     rating: 5,
     title: "Excellent",
     body: "A precise and long-wearing scent.",
@@ -28,6 +29,7 @@ describe("review DTO mappers", () => {
     expect(dto).not.toHaveProperty("status");
     expect(dto).not.toHaveProperty("moderationReason");
     expect(dto.productSlug).toBe("nocturne");
+    expect(dto.authorImageUrl).toBe("https://img.clerk.com/avatar.png");
   });
 
   it("admin review DTO includes status and moderation metadata", () => {

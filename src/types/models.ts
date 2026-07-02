@@ -24,7 +24,7 @@ export interface Product {
   baseNote?: string;
 }
 
-export type ReviewStatus = "pending" | "approved" | "rejected";
+export type ReviewStatus = "published" | "hidden" | "pending" | "approved" | "rejected";
 
 export interface Review {
   id: string;
@@ -33,6 +33,7 @@ export interface Review {
   productName: string;
   userId: string;
   authorName: string;
+  authorImageUrl?: string;
   rating: number;
   title?: string;
   body: string;
@@ -53,6 +54,7 @@ export type PublicReview = Pick<
   | "productSlug"
   | "productName"
   | "authorName"
+  | "authorImageUrl"
   | "rating"
   | "title"
   | "body"

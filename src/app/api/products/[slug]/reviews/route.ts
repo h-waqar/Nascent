@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import connectToDatabase from "@/lib/db";
 import { ProductModel, ReviewModel } from "@/models";
 import { takeFixedWindowRateLimit } from "@/lib/rateLimit";
@@ -9,6 +9,8 @@ import { UpsertReviewSchema } from "@/lib/schemas";
 type ProductRouteContext = {
   params: Promise<{ slug: string }>;
 };
+
+const PRODUCT_VISIBLE_REVIEW_STATUSES = ["published", "approved", "pending"] as const;
 
 function getDisplayName(sessionClaims: unknown): string {
   const claims = sessionClaims as Record<string, unknown> | null | undefined;
@@ -24,6 +26,26 @@ function getDisplayName(sessionClaims: unknown): string {
     (value): value is string => typeof value === "string" && value.trim().length > 0
   );
   return displayName?.trim().slice(0, 80) ?? "Nascent customer";
+}
+
+function cleanImageUrl(value: string | null | undefined): string | undefined {
+  if (!value || value.length > 500) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function getAuthorName(
+  clerkUser: Awaited<ReturnType<typeof currentUser>>,
+  sessionClaims: unknown
+): string {
+  const fromUser =
+    clerkUser?.fullName ??
+    [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ");
+  return fromUser.trim().length > 0 ? fromUser.trim().slice(0, 80) : getDisplayName(sessionClaims);
 }
 
 function isDuplicateKeyError(error: unknown): boolean {
@@ -48,7 +70,10 @@ export async function GET(_req: NextRequest, { params }: ProductRouteContext) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    const reviews = await ReviewModel.find({ productId: product._id, status: "approved" })
+    const reviews = await ReviewModel.find({
+      productId: product._id,
+      status: { $in: PRODUCT_VISIBLE_REVIEW_STATUSES },
+    })
       .sort({ createdAt: -1 })
       .limit(20)
       .lean();
@@ -98,6 +123,7 @@ export async function POST(req: NextRequest, { params }: ProductRouteContext) {
 
   try {
     await connectToDatabase();
+    const clerkUser = await currentUser().catch(() => null);
 
     const product = await ProductModel.findOne({ slug, hidden: { $ne: true } })
       .select("_id slug name")
@@ -111,10 +137,11 @@ export async function POST(req: NextRequest, { params }: ProductRouteContext) {
       $set: {
         productSlug: product.slug,
         productName: product.name,
-        authorName: getDisplayName(sessionClaims),
+        authorName: getAuthorName(clerkUser, sessionClaims),
+        authorImageUrl: cleanImageUrl(clerkUser?.imageUrl),
         rating: parsed.data.rating,
         body: parsed.data.body,
-        status: "pending",
+        status: "published",
         isFeatured: false,
         featuredRank: null,
       },
@@ -161,7 +188,7 @@ export async function POST(req: NextRequest, { params }: ProductRouteContext) {
 
     return NextResponse.json({
       review: toAdminReview(review as unknown as Record<string, unknown>),
-      message: "Review saved for admin approval",
+      message: "Review published",
     });
   } catch (error) {
     console.error(`POST /api/products/${slug}/reviews:`, error);

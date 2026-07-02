@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import connectToDatabase from "@/lib/db";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { ReviewModel } from "@/models";
-import { UpdateReviewModerationSchema } from "@/lib/schemas";
+import { UpdateReviewCurationSchema } from "@/lib/schemas";
 import { toAdminReview } from "@/lib/reviewDtos";
 import type { ReviewStatus } from "@/types/models";
 
@@ -28,10 +27,10 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const parsed = UpdateReviewModerationSchema.safeParse(body);
+  const parsed = UpdateReviewCurationSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Invalid moderation payload", details: parsed.error.flatten() },
+      { error: "Invalid curation payload", details: parsed.error.flatten() },
       { status: 400 }
     );
   }
@@ -44,13 +43,13 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
 
-    const { userId: adminUserId } = await auth();
     const currentStatus = existing.status as ReviewStatus;
     const nextStatus = parsed.data.status ?? currentStatus;
+    const canAppearPublicly = !["hidden", "rejected"].includes(nextStatus);
 
-    if (parsed.data.isFeatured === true && nextStatus !== "approved") {
+    if (parsed.data.isFeatured === true && !canAppearPublicly) {
       return NextResponse.json(
-        { error: "Only approved reviews can be featured on the homepage" },
+        { error: "Hidden or rejected reviews cannot be featured on the homepage" },
         { status: 400 }
       );
     }
@@ -58,33 +57,21 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
     if (
       parsed.data.featuredRank !== undefined &&
       parsed.data.featuredRank !== null &&
-      nextStatus !== "approved"
+      !canAppearPublicly
     ) {
       return NextResponse.json(
-        { error: "Only approved reviews can receive a homepage rank" },
+        { error: "Hidden or rejected reviews cannot receive a homepage rank" },
         { status: 400 }
       );
     }
 
     const set: Record<string, unknown> = {};
-    const unset: Record<string, true> = {};
 
     if (parsed.data.status) {
       set.status = parsed.data.status;
-      set.moderatedBy = adminUserId ?? "admin";
-      set.moderatedAt = new Date();
     }
 
-    if (parsed.data.moderationReason !== undefined) {
-      const reason = parsed.data.moderationReason.trim();
-      if (reason) {
-        set.moderationReason = reason;
-      } else {
-        unset.moderationReason = true;
-      }
-    }
-
-    if (nextStatus !== "approved") {
+    if (!canAppearPublicly) {
       set.isFeatured = false;
       set.featuredRank = null;
     } else {
@@ -102,7 +89,6 @@ export async function PATCH(req: NextRequest, { params }: AdminReviewRouteContex
 
     const update: Record<string, unknown> = {};
     if (Object.keys(set).length > 0) update.$set = set;
-    if (Object.keys(unset).length > 0) update.$unset = unset;
 
     const review = await ReviewModel.findByIdAndUpdate(id, update, {
       new: true,

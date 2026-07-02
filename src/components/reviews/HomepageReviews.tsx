@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { PublicReview } from "@/types/models";
 import { ReviewStars } from "@/components/reviews/ReviewStars";
+import { ReviewerAvatar } from "@/components/reviews/ReviewerAvatar";
 
 function ReviewCard({ review, large = false }: { review: PublicReview; large?: boolean }) {
   return (
@@ -23,9 +24,12 @@ function ReviewCard({ review, large = false }: { review: PublicReview; large?: b
         “{review.body}”
       </p>
       <div className="mt-8 flex items-center justify-between gap-4">
-        <span className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546]">
-          {review.authorName}
-        </span>
+        <div className="flex items-center gap-3 min-w-0">
+          <ReviewerAvatar name={review.authorName} imageUrl={review.authorImageUrl} size="sm" />
+          <span className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546] truncate">
+            {review.authorName}
+          </span>
+        </div>
         <Link
           href={`/products/${review.productSlug}`}
           className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] font-semibold text-black hover:underline"
@@ -80,9 +84,6 @@ export function HomepageReviews() {
               Worn by customers
             </h2>
           </div>
-          <p className="md:col-span-5 font-['Inter'] text-[14px] leading-[1.6] text-black">
-            Only admin-approved and homepage-featured customer reviews appear here.
-          </p>
         </div>
 
         {loading && (
@@ -97,7 +98,7 @@ export function HomepageReviews() {
               Editorial queue
             </p>
             <p className="text-[24px] leading-[1.3] text-black max-w-[760px]">
-              Approved customer reviews will appear here once the studio selects them for the homepage.
+              Customer impressions selected by the studio will appear here soon.
             </p>
           </div>
         )}

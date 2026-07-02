@@ -8,6 +8,7 @@ export interface ReviewDoc {
   productName: string;
   userId: string;
   authorName: string;
+  authorImageUrl?: string;
   rating: number;
   title?: string;
   body: string;
@@ -28,14 +29,15 @@ const ReviewSchema = new Schema<ReviewDoc>(
     productName: { type: String, required: true },
     userId: { type: String, required: true, index: true },
     authorName: { type: String, required: true, default: "Nascent customer" },
+    authorImageUrl: { type: String, maxlength: 500 },
     rating: { type: Number, required: true, min: 1, max: 5 },
     title: { type: String, maxlength: 120 },
     body: { type: String, required: true, minlength: 10, maxlength: 2000 },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
+      enum: ["published", "hidden", "pending", "approved", "rejected"],
       required: true,
-      default: "pending",
+      default: "published",
       index: true,
     },
     moderationReason: { type: String, maxlength: 500 },
@@ -50,6 +52,7 @@ const ReviewSchema = new Schema<ReviewDoc>(
 ReviewSchema.index({ userId: 1, productId: 1 }, { unique: true });
 ReviewSchema.index({ productId: 1, status: 1, createdAt: -1 });
 ReviewSchema.index({ status: 1, isFeatured: 1, featuredRank: 1, updatedAt: -1 });
+ReviewSchema.index({ isFeatured: 1, createdAt: -1 });
 
 export const ReviewModel: Model<ReviewDoc> =
   (mongoose.models.Review as Model<ReviewDoc>) ||

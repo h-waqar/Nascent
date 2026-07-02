@@ -5,7 +5,7 @@ import {
   UpdateOrderStatusSchema,
   UpdateSettingsSchema,
   UpsertReviewSchema,
-  UpdateReviewModerationSchema,
+  UpdateReviewCurationSchema,
 } from "@/lib/schemas";
 
 describe("CreateProductSchema", () => {
@@ -83,18 +83,22 @@ describe("UpsertReviewSchema", () => {
   });
 });
 
-describe("UpdateReviewModerationSchema", () => {
-  it("accepts admin approval with homepage curation fields", () => {
+describe("UpdateReviewCurationSchema", () => {
+  it("accepts homepage curation fields", () => {
     expect(
-      UpdateReviewModerationSchema.safeParse({
-        status: "approved",
+      UpdateReviewCurationSchema.safeParse({
+        status: "published",
         isFeatured: true,
         featuredRank: 1,
       }).success
     ).toBe(true);
   });
 
-  it("rejects empty moderation payloads", () => {
-    expect(UpdateReviewModerationSchema.safeParse({}).success).toBe(false);
+  it("rejects old approval statuses for admin curation writes", () => {
+    expect(UpdateReviewCurationSchema.safeParse({ status: "approved" }).success).toBe(false);
+  });
+
+  it("rejects empty curation payloads", () => {
+    expect(UpdateReviewCurationSchema.safeParse({}).success).toBe(false);
   });
 });

@@ -3,6 +3,8 @@ import connectToDatabase from "@/lib/db";
 import { ReviewModel } from "@/models";
 import { toPublicReview } from "@/lib/reviewDtos";
 
+const HOMEPAGE_VISIBLE_REVIEW_STATUSES = ["published", "approved", "pending"] as const;
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const requestedLimit = Number(searchParams.get("limit") ?? 6);
@@ -14,7 +16,7 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
 
     const reviews = await ReviewModel.find({
-      status: "approved",
+      status: { $in: HOMEPAGE_VISIBLE_REVIEW_STATUSES },
       isFeatured: true,
     })
       .sort({ featuredRank: 1, updatedAt: -1 })

@@ -25,6 +25,16 @@ function optionalString(value: unknown): string | undefined {
   return typeof value === "string" && value.length > 0 ? value : undefined;
 }
 
+function optionalUrl(value: unknown): string | undefined {
+  if (typeof value !== "string" || value.length > 500) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function optionalNumber(value: unknown): number | null {
   return typeof value === "number" ? value : null;
 }
@@ -36,6 +46,7 @@ export function toPublicReview(review: ReviewRecord): PublicReview {
     productSlug: String(review.productSlug ?? ""),
     productName: String(review.productName ?? ""),
     authorName: String(review.authorName ?? "Nascent customer"),
+    authorImageUrl: optionalUrl(review.authorImageUrl),
     rating: Number(review.rating ?? 0),
     title: optionalString(review.title),
     body: String(review.body ?? ""),

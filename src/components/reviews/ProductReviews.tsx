@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import type { PublicReview } from "@/types/models";
 import { ReviewStars } from "@/components/reviews/ReviewStars";
+import { ReviewerAvatar } from "@/components/reviews/ReviewerAvatar";
 
 type ProductReviewsProps = {
   productSlug: string;
@@ -64,7 +65,12 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
       }
       setBody("");
       setTitle("");
-      setNotice("Review saved. It will appear after admin approval.");
+      setNotice("Review published.");
+      const next = await fetch(`/api/products/${productSlug}/reviews`, { cache: "no-store" });
+      if (next.ok) {
+        const nextData = await next.json();
+        setReviews(nextData.reviews ?? []);
+      }
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Failed to save review");
     } finally {
@@ -82,10 +88,6 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
           <h2 className="text-[32px] leading-[1.1] tracking-[-0.02em] font-normal text-black uppercase">
             Reviews
           </h2>
-          <p className="mt-6 font-['Inter'] text-[14px] leading-[1.6] text-black">
-            Every submitted review is moderated before publication. Approved reviews appear here;
-            selected approved reviews may also be featured on the homepage.
-          </p>
         </div>
 
         <div className="lg:col-span-8 grid grid-cols-1 gap-8">
@@ -131,7 +133,7 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
                     disabled={submitting || body.trim().length < 10}
                     className="justify-self-start border border-black bg-black text-white py-3 px-8 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-white hover:text-black transition-none disabled:opacity-40"
                   >
-                    {submitting ? "Saving…" : "Submit for approval"}
+                    {submitting ? "Saving…" : "Publish review"}
                   </button>
                 </form>
               )}
@@ -155,27 +157,30 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
               </div>
             ) : reviews.length === 0 ? (
               <div className="border-r border-b border-black p-5 font-['Inter'] text-[13px] text-black">
-                No approved reviews yet.
+                No reviews yet.
               </div>
             ) : (
               reviews.map((review) => (
                 <article key={review.id} className="border-r border-b border-black p-5">
                   <div className="flex items-center justify-between gap-4 mb-4">
-                    <ReviewStars rating={review.rating} size="sm" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <ReviewerAvatar name={review.authorName} imageUrl={review.authorImageUrl} size="sm" />
+                      <span className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546] truncate">
+                        {review.authorName}
+                      </span>
+                    </div>
                     <span className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546]">
                       {new Date(review.createdAt).toLocaleDateString()}
                     </span>
                   </div>
+                  <ReviewStars rating={review.rating} size="sm" />
                   {review.title && (
-                    <h3 className="font-['Inter'] uppercase tracking-[0.1em] text-[12px] font-semibold text-black mb-3">
+                    <h3 className="font-['Inter'] uppercase tracking-[0.1em] text-[12px] font-semibold text-black mt-4 mb-3">
                       {review.title}
                     </h3>
                   )}
                   <p className="font-['Inter'] text-[14px] leading-[1.6] text-black">
                     “{review.body}”
-                  </p>
-                  <p className="mt-5 font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546]">
-                    {review.authorName}
                   </p>
                 </article>
               ))

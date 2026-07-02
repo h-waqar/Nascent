@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { ORDER_STATUSES } from "@/lib/orderStatus";
 
-export const REVIEW_STATUSES = ["pending", "approved", "rejected"] as const;
+export const REVIEW_STATUSES = ["published", "hidden", "pending", "approved", "rejected"] as const;
+export const REVIEW_CURATION_STATUSES = ["published", "hidden"] as const;
 
 export const CreateProductSchema = z.object({
   name: z.string().min(1),
@@ -66,15 +67,14 @@ export const UpsertReviewSchema = z.object({
   body: z.string().trim().min(10).max(2000),
 });
 
-export const UpdateReviewModerationSchema = z
+export const UpdateReviewCurationSchema = z
   .object({
-    status: z.enum(REVIEW_STATUSES).optional(),
-    moderationReason: z.string().trim().max(500).optional(),
+    status: z.enum(REVIEW_CURATION_STATUSES).optional(),
     isFeatured: z.boolean().optional(),
     featuredRank: z.number().int().min(1).max(999).nullable().optional(),
   })
   .refine((value) => Object.keys(value).length > 0, {
-    message: "At least one moderation field is required",
+    message: "At least one curation field is required",
   });
 
 export type CreateProductInput = z.infer<typeof CreateProductSchema>;
@@ -82,4 +82,4 @@ export type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
 export type UpdateOrderStatusInput = z.infer<typeof UpdateOrderStatusSchema>;
 export type UpdateSettingsInput = z.infer<typeof UpdateSettingsSchema>;
 export type UpsertReviewInput = z.infer<typeof UpsertReviewSchema>;
-export type UpdateReviewModerationInput = z.infer<typeof UpdateReviewModerationSchema>;
+export type UpdateReviewCurationInput = z.infer<typeof UpdateReviewCurationSchema>;
