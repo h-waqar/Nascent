@@ -24,6 +24,44 @@ export interface Product {
   baseNote?: string;
 }
 
+export type ReviewStatus = "pending" | "approved" | "rejected";
+
+export interface Review {
+  id: string;
+  productId: string;
+  productSlug: string;
+  productName: string;
+  userId: string;
+  authorName: string;
+  rating: number;
+  title?: string;
+  body: string;
+  status: ReviewStatus;
+  moderationReason?: string;
+  moderatedBy?: string;
+  moderatedAt?: string;
+  isFeatured: boolean;
+  featuredRank?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PublicReview = Pick<
+  Review,
+  | "id"
+  | "productId"
+  | "productSlug"
+  | "productName"
+  | "authorName"
+  | "rating"
+  | "title"
+  | "body"
+  | "isFeatured"
+  | "featuredRank"
+  | "createdAt"
+  | "updatedAt"
+>;
+
 export interface Category {
   id: string;
   slug: string;

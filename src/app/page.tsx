@@ -8,6 +8,7 @@ import { Footer } from "@/components/ui/Footer";
 import type { Product } from "@/types/models";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { formatPrice } from "@/lib/currency";
+import { HomepageReviews } from "@/components/reviews/HomepageReviews";
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -249,6 +250,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <HomepageReviews />
       </main>
 
       <Footer />

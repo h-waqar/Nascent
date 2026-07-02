@@ -7,6 +7,7 @@ import type { Product } from "@/types/models";
 import { useCartStore } from "@/lib/cart";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { formatPrice } from "@/lib/currency";
+import { ProductReviews } from "@/components/reviews/ProductReviews";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -180,6 +181,8 @@ export default function ProductPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <ProductReviews productSlug={product.slug} />
     </div>
   );
 }

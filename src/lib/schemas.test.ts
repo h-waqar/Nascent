@@ -4,6 +4,8 @@ import {
   UpdateProductSchema,
   UpdateOrderStatusSchema,
   UpdateSettingsSchema,
+  UpsertReviewSchema,
+  UpdateReviewModerationSchema,
 } from "@/lib/schemas";
 
 describe("CreateProductSchema", () => {
@@ -57,5 +59,42 @@ describe("UpdateSettingsSchema", () => {
     expect(
       UpdateSettingsSchema.safeParse({ accountName: "X", codEnabled: true }).success
     ).toBe(true);
+  });
+});
+
+describe("UpsertReviewSchema", () => {
+  it("accepts a bounded valid review", () => {
+    expect(
+      UpsertReviewSchema.safeParse({
+        rating: 5,
+        title: "Precise and quiet",
+        body: "A clean opening with a long mineral drydown.",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects invalid rating and short body", () => {
+    expect(
+      UpsertReviewSchema.safeParse({
+        rating: 6,
+        body: "short",
+      }).success
+    ).toBe(false);
+  });
+});
+
+describe("UpdateReviewModerationSchema", () => {
+  it("accepts admin approval with homepage curation fields", () => {
+    expect(
+      UpdateReviewModerationSchema.safeParse({
+        status: "approved",
+        isFeatured: true,
+        featuredRank: 1,
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects empty moderation payloads", () => {
+    expect(UpdateReviewModerationSchema.safeParse({}).success).toBe(false);
   });
 });

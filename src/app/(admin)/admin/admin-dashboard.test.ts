@@ -15,7 +15,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 describe("AdminDashboardPage — getStats self-fetch URL", () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
+  let fetchSpy: { mock: { calls: Array<[RequestInfo | URL, RequestInit?]> } };
   let originalAppUrl: string | undefined;
 
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe("AdminDashboardPage — getStats self-fetch URL", () => {
 
     fetchSpy = vi.spyOn(global, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ stats: null }), { status: 200 })
-    );
+    ) as unknown as typeof fetchSpy;
   });
 
   afterEach(() => {

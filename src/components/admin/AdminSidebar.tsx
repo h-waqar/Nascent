@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, ShoppingBag, Settings } from "lucide-react";
+import { LayoutDashboard, MessageSquareText, Package, ShoppingBag, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ADMIN_LINKS = [
   { href: "/admin", label: "Dashboard", Icon: LayoutDashboard, exact: true },
   { href: "/admin/products", label: "Products", Icon: Package, exact: false },
   { href: "/admin/orders", label: "Orders", Icon: ShoppingBag, exact: false },
+  { href: "/admin/reviews", label: "Reviews", Icon: MessageSquareText, exact: false },
   { href: "/admin/settings", label: "Settings", Icon: Settings, exact: false },
 ] as const;
 

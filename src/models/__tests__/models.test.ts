@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ProductModel, CategoryModel, OrderModel, SettingsModel } from "@/models";
+import { ProductModel, CategoryModel, OrderModel, SettingsModel, ReviewModel } from "@/models";
 
 describe("Mongoose models", () => {
   it("Product schema declares numeric price and required slug", () => {
@@ -65,5 +65,33 @@ describe("Mongoose models", () => {
     };
     expect(accountNamePath.instance).toBe("String");
     expect(ibanPath.instance).toBe("String");
+  });
+
+  it("Review schema enforces one review per user/product", () => {
+    const indexes = ReviewModel.schema.indexes() as Array<[
+      Record<string, number>,
+      { unique?: boolean } | undefined,
+    ]>;
+    const uniqueIndex = indexes.find(([fields, options]) => {
+      return (
+        fields.userId === 1 &&
+        fields.productId === 1 &&
+        options?.unique === true
+      );
+    });
+    expect(uniqueIndex).toBeTruthy();
+  });
+
+  it("Review schema defaults submitted reviews to pending and not featured", () => {
+    const statusPath = ReviewModel.schema.path("status") as unknown as {
+      enumValues: string[];
+      defaultValue: string;
+    };
+    const featuredPath = ReviewModel.schema.path("isFeatured") as unknown as {
+      defaultValue: boolean;
+    };
+    expect(statusPath.enumValues).toEqual(["pending", "approved", "rejected"]);
+    expect(statusPath.defaultValue).toBe("pending");
+    expect(featuredPath.defaultValue).toBe(false);
   });
 });
