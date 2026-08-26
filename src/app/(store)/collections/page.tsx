@@ -2,10 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import Link from "next/link";
-import Image from "next/image";
 import type { Product } from "@/types/models";
-import { formatPrice } from "@/lib/currency";
+import { ProductCard } from "@/components/product/ProductCard";
+import { ProductGrid } from "@/components/product/ProductGrid";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const SCENT_PROFILES = ["Floral", "Woody", "Oriental", "Fresh"];
 const INTENSITIES = ["Subtle", "Moderate", "Intense"];
@@ -142,53 +142,21 @@ export default function CollectionsPage() {
 
         {/* Grid */}
         {filtered.length === 0 ? (
-          <div className="flex-grow flex items-center justify-center p-16">
-            <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">
-              No fragrances match your filters.
-            </p>
-          </div>
+          <EmptyState
+            message="No fragrances match your filters."
+            className="flex-grow min-h-[400px]"
+          />
         ) : (
-          <div
-            ref={gridRef}
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 transition-[opacity,transform] duration-700 ease-out ${gridVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          <ProductGrid
+            gridRef={gridRef}
+            isVisible={gridVisible}
+            cols={3}
+            className="border-none"
           >
             {filtered.map((product) => (
-              <Link
-                key={product.id}
-                href={`/products/${product.slug}`}
-                className="border-b border-r border-black flex flex-col bg-white group overflow-hidden cursor-pointer"
-              >
-                {/* Image — full bleed with hover overlay */}
-                <div className="relative h-72 bg-[#f0eeee] overflow-hidden">
-                  {product.images[0] ? (
-                    <Image
-                      src={product.images[0]}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover grayscale transition-[filter] duration-300 ease-out group-hover:grayscale-0"
-                    />
-                  ) : null}
-                  {/* View overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-[background-color] duration-300 flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-white text-white text-[11px] uppercase tracking-[0.2em] font-semibold px-6 py-3 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                      View
-                    </span>
-                  </div>
-                </div>
-
-                {/* Info bar */}
-                <div className="px-5 py-4 flex justify-between items-center bg-white text-black border-t border-black group-hover:bg-black group-hover:text-white transition-colors duration-300">
-                  <span className="font-['Inter'] uppercase tracking-[0.12em] text-[11px] font-semibold">
-                    {product.name}
-                  </span>
-                  <span className="font-['Inter'] text-[11px] font-semibold">
-                    {formatPrice(product.price)}
-                  </span>
-                </div>
-              </Link>
+              <ProductCard key={product.id} product={product} />
             ))}
-          </div>
+          </ProductGrid>
         )}
       </section>
     </div>

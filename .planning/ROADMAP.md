@@ -83,6 +83,19 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
 
 ---
 
+### ✅ v2.0 Architecture & Component Optimization
+#### Phase 13: Component Reorganization & DRY Architecture
+**Goal**: Consolidate repetitive UI patterns into reusable domain and UI primitives, remove legacy mock files, and refactor storefront and admin pages.
+**Depends on**: Phase 12
+**Success Criteria**:
+  1. Reusable primitives for inputs, product cards, olfactory profile, address, order items, and admin tables
+  2. Zero breaking visual or functional regressions across all store and admin routes
+  3. Green Vitest suite, clean ESLint, and passing Next.js Turbopack build
+**Plans**: 1 plan
+- [x] 13-01: Component Reorganization & DRY Architecture
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -96,3 +109,4 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
 | 9. Native Review Showcase | v1.0 | 2/2 | Complete | 2026-06-02 |
 | 11. Build & Dependency Hardening | v1.1 | 2/2 | Complete | 2026-08-26 |
 | 12. Component & Hook Polish | v1.1 | 1/1 | Complete | 2026-08-26 |
+| 13. Component Reorganization | v2.0 | 1/1 | Complete | 2026-08-26 |

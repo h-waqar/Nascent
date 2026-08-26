@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Settings } from "@/types/models";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminToggle } from "@/components/admin/AdminToggle";
+import { Input } from "@/components/ui/Input";
 
 interface BankForm {
   bankName: string;
@@ -13,7 +14,13 @@ interface BankForm {
   shippingCost: string;
 }
 
-const EMPTY_BANK: BankForm = { bankName: "", accountName: "", accountNumber: "", iban: "", shippingCost: "0" };
+const EMPTY_BANK: BankForm = {
+  bankName: "",
+  accountName: "",
+  accountNumber: "",
+  iban: "",
+  shippingCost: "0",
+};
 
 interface ContactForm {
   whatsappNumber: string;
@@ -75,7 +82,7 @@ export default function AdminSettingsPage() {
       throw new Error(
         Array.isArray(body.error)
           ? body.error.map((i: { message?: string }) => i.message).join(", ")
-          : (body.error ?? `HTTP ${res.status}`)
+          : body.error ?? `HTTP ${res.status}`
       );
     }
     const data = await res.json();
@@ -184,64 +191,40 @@ export default function AdminSettingsPage() {
             Bank Transfer Details
           </h2>
           <form onSubmit={handleSaveBank} className="space-y-6">
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
-                Bank Name
-              </label>
-              <input
-                type="text"
-                value={bank.bankName}
-                onChange={(e) => setBank({ ...bank, bankName: e.target.value })}
-                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
-                Account Holder Name
-              </label>
-              <input
-                type="text"
-                value={bank.accountName}
-                onChange={(e) => setBank({ ...bank, accountName: e.target.value })}
-                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
-                Account Number
-              </label>
-              <input
-                type="text"
-                value={bank.accountNumber}
-                onChange={(e) => setBank({ ...bank, accountNumber: e.target.value })}
-                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
-                IBAN
-              </label>
-              <input
-                type="text"
-                value={bank.iban}
-                onChange={(e) => setBank({ ...bank, iban: e.target.value.toUpperCase() })}
-                maxLength={34}
-                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none uppercase"
-              />
-            </div>
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
-                Shipping Cost (Rs.)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="1"
-                value={bank.shippingCost}
-                onChange={(e) => setBank({ ...bank, shippingCost: e.target.value })}
-                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-              />
-            </div>
+            <Input
+              label="Bank Name"
+              type="text"
+              value={bank.bankName}
+              onChange={(e) => setBank({ ...bank, bankName: e.target.value })}
+            />
+            <Input
+              label="Account Holder Name"
+              type="text"
+              value={bank.accountName}
+              onChange={(e) => setBank({ ...bank, accountName: e.target.value })}
+            />
+            <Input
+              label="Account Number"
+              type="text"
+              value={bank.accountNumber}
+              onChange={(e) => setBank({ ...bank, accountNumber: e.target.value })}
+            />
+            <Input
+              label="IBAN"
+              type="text"
+              value={bank.iban}
+              onChange={(e) => setBank({ ...bank, iban: e.target.value.toUpperCase() })}
+              maxLength={34}
+              className="uppercase"
+            />
+            <Input
+              label="Shipping Cost (Rs.)"
+              type="number"
+              min="0"
+              step="1"
+              value={bank.shippingCost}
+              onChange={(e) => setBank({ ...bank, shippingCost: e.target.value })}
+            />
             <div className="flex items-center gap-4 border-t border-black pt-6">
               <button
                 type="submit"
@@ -256,28 +239,24 @@ export default function AdminSettingsPage() {
             </div>
           </form>
         </section>
+
         {/* Contact Details */}
         <section>
           <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2 mb-6">
             Contact Details
           </h2>
           <form onSubmit={handleSaveContact} className="space-y-6">
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
-                WhatsApp Number
-              </label>
-              <p className="text-[11px] text-[#4c4546] mb-2">
-                International format without +, e.g. 923001234567
-              </p>
-              <input
-                type="text"
-                value={contact.whatsappNumber}
-                onChange={(e) => setContact({ whatsappNumber: e.target.value.replace(/\D/g, "") })}
-                maxLength={20}
-                placeholder="923001234567"
-                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-              />
-            </div>
+            <Input
+              label="WhatsApp Number"
+              hint="International format without +, e.g. 923001234567"
+              type="text"
+              value={contact.whatsappNumber}
+              onChange={(e) =>
+                setContact({ whatsappNumber: e.target.value.replace(/\D/g, "") })
+              }
+              maxLength={20}
+              placeholder="923001234567"
+            />
             <div className="flex items-center gap-4 border-t border-black pt-6">
               <button
                 type="submit"

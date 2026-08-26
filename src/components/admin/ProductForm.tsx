@@ -7,6 +7,8 @@ import type { Product, Category } from "@/types/models";
 import { generateSlug } from "@/lib/slug";
 import { AdminToggle } from "@/components/admin/AdminToggle";
 import { ProductImageUpload } from "@/components/admin/ProductImageUpload";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 type Mode = "new" | "edit";
 
@@ -17,22 +19,31 @@ export interface ProductFormProps {
 }
 
 const INTENSITY_OPTIONS = ["Subtle", "Light", "Moderate", "Strong", "Intense"] as const;
-const SCENT_NOTE_OPTIONS = ["Floral", "Woody", "Oriental", "Fresh", "Citrus", "Spicy", "Musk", "Aquatic"] as const;
+const SCENT_NOTE_OPTIONS = [
+  "Floral",
+  "Woody",
+  "Oriental",
+  "Fresh",
+  "Citrus",
+  "Spicy",
+  "Musk",
+  "Aquatic",
+] as const;
 
 interface FormState {
   name: string;
   slug: string;
-  slugDirty: boolean;     // true once admin has manually edited the slug — stop auto-syncing from name
-  price: string;          // string for the input, parsed to number on submit
+  slugDirty: boolean; // true once admin has manually edited the slug — stop auto-syncing from name
+  price: string; // string for the input, parsed to number on submit
   stock: string;
   description: string;
   topNote: string;
   heartNote: string;
   baseNote: string;
-  intensity: string;      // "" or one of INTENSITY_OPTIONS
+  intensity: string; // "" or one of INTENSITY_OPTIONS
   volume: string;
-  collection: string;     // display label e.g. "SIGNATURE COLLECTION // 001"
-  categoryId: string;     // FK to Category document
+  collection: string; // display label e.g. "SIGNATURE COLLECTION // 001"
+  categoryId: string; // FK to Category document
   isFeatured: boolean;
   scentNotes: string[];
 }
@@ -48,7 +59,10 @@ function fromProduct(p: Product | undefined): FormState {
     topNote: p?.topNote ?? "",
     heartNote: p?.heartNote ?? "",
     baseNote: p?.baseNote ?? "",
-    intensity: (p?.intensity && (INTENSITY_OPTIONS as readonly string[]).includes(p.intensity)) ? p.intensity : "",
+    intensity:
+      p?.intensity && (INTENSITY_OPTIONS as readonly string[]).includes(p.intensity)
+        ? p.intensity
+        : "",
     volume: p?.volume ?? "",
     collection: p?.collection ?? "",
     categoryId: p?.categoryId ?? "",
@@ -129,7 +143,8 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
       payload.intensity = form.intensity || null;
       payload.volume = form.volume.trim() || null;
 
-      const url = mode === "new" ? "/api/admin/products" : `/api/admin/products/${initialProduct!.id}`;
+      const url =
+        mode === "new" ? "/api/admin/products" : `/api/admin/products/${initialProduct!.id}`;
       const method = mode === "new" ? "POST" : "PUT";
       const res = await fetch(url, {
         method,
@@ -162,101 +177,103 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
 
       {/* SECTION 1 — Basic Info */}
       <section className="space-y-6">
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">Basic Info</h2>
-        <div>
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Name</label>
-          <input
-            type="text"
-            required
-            value={form.name}
-            onChange={(e) => handleNameChange(e.target.value)}
-            className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Slug</label>
-          <input
-            type="text"
-            required
-            value={form.slug}
-            onChange={(e) => handleSlugChange(e.target.value)}
-            pattern="[a-z0-9-]+"
-            className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-          />
-        </div>
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">
+          Basic Info
+        </h2>
+        <Input
+          label="Name"
+          type="text"
+          required
+          value={form.name}
+          onChange={(e) => handleNameChange(e.target.value)}
+        />
+        <Input
+          label="Slug"
+          type="text"
+          required
+          value={form.slug}
+          onChange={(e) => handleSlugChange(e.target.value)}
+          pattern="[a-z0-9-]+"
+        />
         <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Price (Rs.)</label>
-            <input
-              type="number"
-              required
-              min="1"
-              step="1"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Stock</label>
-            <input
-              type="number"
-              required
-              min="0"
-              step="1"
-              value={form.stock}
-              onChange={(e) => setForm({ ...form, stock: e.target.value })}
-              className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-            />
-          </div>
+          <Input
+            label="Price (Rs.)"
+            type="number"
+            required
+            min="1"
+            step="1"
+            value={form.price}
+            onChange={(e) => setForm({ ...form, price: e.target.value })}
+          />
+          <Input
+            label="Stock"
+            type="number"
+            required
+            min="0"
+            step="1"
+            value={form.stock}
+            onChange={(e) => setForm({ ...form, stock: e.target.value })}
+          />
         </div>
       </section>
 
       {/* SECTION 2 — Description */}
       <section className="space-y-6">
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">Description</h2>
-        <textarea
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">
+          Description
+        </h2>
+        <Textarea
           required
           rows={5}
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
-          className="border border-black px-3 py-2 text-[13px] w-full bg-white text-black focus:outline-none resize-y"
+          className="resize-y"
         />
       </section>
 
       {/* SECTION 3 — Fragrance Notes */}
       <section className="space-y-6">
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">Fragrance Notes</h2>
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">
+          Fragrance Notes
+        </h2>
         <div className="grid grid-cols-3 gap-6">
           {(["topNote", "heartNote", "baseNote"] as const).map((key) => (
-            <div key={key}>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">
-                {key === "topNote" ? "Top Note" : key === "heartNote" ? "Heart Note" : "Base Note"}
-              </label>
-              <input
-                type="text"
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-              />
-            </div>
+            <Input
+              key={key}
+              label={
+                key === "topNote"
+                  ? "Top Note"
+                  : key === "heartNote"
+                  ? "Heart Note"
+                  : "Base Note"
+              }
+              type="text"
+              value={form[key]}
+              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+            />
           ))}
         </div>
-        <div>
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Intensity</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black block">
+            Intensity
+          </label>
           <select
             value={form.intensity}
             onChange={(e) => setForm({ ...form, intensity: e.target.value })}
-            className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
+            className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none rounded-none"
           >
             <option value="">— Select intensity —</option>
             {INTENSITY_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>{opt}</option>
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
             ))}
           </select>
         </div>
         <div>
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-3 block">Scent Profile</label>
+          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-3 block">
+            Scent Profile
+          </label>
           <div className="flex flex-wrap gap-2">
             {SCENT_NOTE_OPTIONS.map((note) => {
               const checked = form.scentNotes.includes(note);
@@ -288,39 +305,39 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
 
       {/* SECTION 4 — Specs */}
       <section className="space-y-6">
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">Specs</h2>
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">
+          Specs
+        </h2>
         <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Volume</label>
-            <input
-              type="text"
-              placeholder="e.g. 50ml Extrait de Parfum"
-              value={form.volume}
-              onChange={(e) => setForm({ ...form, volume: e.target.value })}
-              className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Collection Label</label>
-            <input
-              type="text"
-              placeholder="e.g. SIGNATURE COLLECTION // 001"
-              value={form.collection}
-              onChange={(e) => setForm({ ...form, collection: e.target.value })}
-              className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
-            />
-          </div>
+          <Input
+            label="Volume"
+            type="text"
+            placeholder="e.g. 50ml Extrait de Parfum"
+            value={form.volume}
+            onChange={(e) => setForm({ ...form, volume: e.target.value })}
+          />
+          <Input
+            label="Collection Label"
+            type="text"
+            placeholder="e.g. SIGNATURE COLLECTION // 001"
+            value={form.collection}
+            onChange={(e) => setForm({ ...form, collection: e.target.value })}
+          />
         </div>
-        <div>
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black mb-2 block">Category</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-black block">
+            Category
+          </label>
           <select
             value={form.categoryId}
             onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-            className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none"
+            className="border border-black px-3 h-[40px] text-[13px] w-full bg-white text-black focus:outline-none rounded-none"
           >
             <option value="">— None —</option>
             {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
             ))}
           </select>
         </div>
@@ -333,8 +350,12 @@ export function ProductForm({ mode, initialProduct }: ProductFormProps) {
 
       {/* SECTION 5 — Media */}
       <section className="space-y-6">
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">Media</h2>
-        <p className="text-[11px] text-[#4c4546]">First image is the main product image. Hover to remove.</p>
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.15em] text-black border-b border-black pb-2">
+          Media
+        </h2>
+        <p className="text-[11px] text-[#4c4546]">
+          First image is the main product image. Hover to remove.
+        </p>
         <ProductImageUpload
           existingUrls={existingImages}
           onExistingUrlsChange={setExistingImages}

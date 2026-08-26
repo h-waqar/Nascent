@@ -8,6 +8,8 @@ import { useCartStore } from "@/lib/cart";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { formatPrice } from "@/lib/currency";
 import { ProductReviews } from "@/components/reviews/ProductReviews";
+import { OlfactoryProfile } from "@/components/product/OlfactoryProfile";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -21,8 +23,14 @@ export default function ProductPage({ params }: Props) {
   useEffect(() => {
     fetch(`/api/products/${slug}`)
       .then((r) => {
-        if (r.status === 404) { setStatus("notfound"); return; }
-        return r.json().then((data) => { setProduct(data.product); setStatus("ok"); });
+        if (r.status === 404) {
+          setStatus("notfound");
+          return;
+        }
+        return r.json().then((data) => {
+          setProduct(data.product);
+          setStatus("ok");
+        });
       })
       .catch(() => setStatus("notfound"));
   }, [slug]);
@@ -32,11 +40,7 @@ export default function ProductPage({ params }: Props) {
 
   if (status === "notfound") notFound();
   if (status === "loading" || !product) {
-    return (
-      <div className="max-w-[1440px] mx-auto min-h-[calc(100vh-80px)] flex items-center justify-center">
-        <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">Loading...</p>
-      </div>
-    );
+    return <LoadingState minHeight="min-h-[calc(100vh-80px)]" />;
   }
 
   function handleAddToCart() {
@@ -49,6 +53,8 @@ export default function ProductPage({ params }: Props) {
     });
     openCart();
   }
+
+  const hasNotes = Boolean(product.topNote || product.heartNote || product.baseNote);
 
   return (
     <div className="max-w-[1440px] mx-auto">
@@ -85,35 +91,22 @@ export default function ProductPage({ params }: Props) {
           </div>
 
           {/* Olfactory profile */}
-          {(product.topNote || product.heartNote || product.baseNote) && (
+          {hasNotes && (
             <div
               ref={specsRef}
-              className={`mb-16 border-t border-black pt-8 transition-[opacity,transform] duration-700 ease-out ${specsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+              className={`mb-16 border-t border-black pt-8 transition-[opacity,transform] duration-700 ease-out ${
+                specsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              }`}
             >
               <h3 className="font-['Inter'] uppercase tracking-[0.1em] text-[11px] font-semibold text-black mb-8">
                 Olfactory Profile
               </h3>
-              <div className="space-y-6">
-                {[
-                  { note: product.topNote, label: "TOP" },
-                  { note: product.heartNote, label: "HEART" },
-                  { note: product.baseNote, label: "BASE" },
-                ]
-                  .filter(({ note }) => note)
-                  .map(({ note, label }) => (
-                    <div
-                      key={label}
-                      className="flex items-center justify-between border-b border-[#cfc4c5] pb-2"
-                    >
-                      <span className="font-['Inter'] text-[14px] text-black uppercase">
-                        {note}
-                      </span>
-                      <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">
-                        ({label})
-                      </span>
-                    </div>
-                  ))}
-              </div>
+              <OlfactoryProfile
+                topNote={product.topNote}
+                heartNote={product.heartNote}
+                baseNote={product.baseNote}
+                variant="table"
+              />
             </div>
           )}
 
@@ -141,44 +134,13 @@ export default function ProductPage({ params }: Props) {
               Technical Specifications
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
-            <div className="space-y-12">
-              {product.topNote && (
-                <div>
-                  <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546] mb-2">
-                    Top Note
-                  </p>
-                  <p className="text-[18px] leading-[1.6] text-black uppercase">{product.topNote}</p>
-                </div>
-              )}
-              {product.heartNote && (
-                <div>
-                  <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546] mb-2">
-                    Heart Note
-                  </p>
-                  <p className="text-[18px] leading-[1.6] text-black uppercase">{product.heartNote}</p>
-                </div>
-              )}
-            </div>
-            <div className="space-y-12">
-              {product.baseNote && (
-                <div>
-                  <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546] mb-2">
-                    Base Note
-                  </p>
-                  <p className="text-[18px] leading-[1.6] text-black uppercase">{product.baseNote}</p>
-                </div>
-              )}
-              <div>
-                <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546] mb-2">
-                  Format
-                </p>
-                <p className="text-[18px] leading-[1.6] text-black uppercase">
-                  {product.volume ?? "50ml Extrait de Parfum"}
-                </p>
-              </div>
-            </div>
-          </div>
+          <OlfactoryProfile
+            topNote={product.topNote}
+            heartNote={product.heartNote}
+            baseNote={product.baseNote}
+            volume={product.volume}
+            variant="specs"
+          />
         </div>
       </section>
 

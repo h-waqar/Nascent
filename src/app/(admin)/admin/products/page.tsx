@@ -8,6 +8,7 @@ import { formatPrice } from "@/lib/currency";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ConfirmationModal } from "@/components/admin/ConfirmationModal";
 import { LowStockBadge } from "@/components/admin/LowStockBadge";
+import { AdminTable, AdminTableHeader, AdminTableRow } from "@/components/admin/AdminTable";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,7 +32,9 @@ export default function AdminProductsPage() {
       const cData = cRes.ok ? await cRes.json() : { categories: [] };
       setProducts(pData.products ?? []);
       const map: Record<string, string> = {};
-      (cData.categories ?? []).forEach((c: Category) => { map[c.id] = c.name; });
+      (cData.categories ?? []).forEach((c: Category) => {
+        map[c.id] = c.name;
+      });
       setCategoriesById(map);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Load failed");
@@ -54,7 +57,9 @@ export default function AdminProductsPage() {
         if (!cancelled) {
           setProducts(pData.products ?? []);
           const map: Record<string, string> = {};
-          (cData.categories ?? []).forEach((c: Category) => { map[c.id] = c.name; });
+          (cData.categories ?? []).forEach((c: Category) => {
+            map[c.id] = c.name;
+          });
           setCategoriesById(map);
         }
       } catch (e) {
@@ -120,29 +125,34 @@ export default function AdminProductsPage() {
             {error}
           </div>
         )}
-        <div className="border border-black">
+        <AdminTable>
           {/* Header row */}
-          <div className="bg-black text-white h-[44px] px-4 flex items-center text-[11px] font-semibold uppercase tracking-[0.15em]">
+          <AdminTableHeader>
             <span className="w-[80px]">Image</span>
             <span className="flex-1">Name</span>
             <span className="w-[120px] text-right">Price</span>
             <span className="w-[80px] text-right">Stock</span>
             <span className="w-[160px] text-right">Collection</span>
             <span className="w-[220px] text-right">Actions</span>
-          </div>
+          </AdminTableHeader>
           {loading ? (
             <div className="px-4 py-3 text-[13px] text-black">Loading…</div>
           ) : products.length === 0 ? (
-            <div className="px-4 py-3 text-[13px] text-black">No products yet. Click + New Product to add one.</div>
+            <div className="px-4 py-3 text-[13px] text-black">
+              No products yet. Click + New Product to add one.
+            </div>
           ) : (
             products.map((p) => (
-              <div
-                key={p.id}
-                className="h-[64px] px-4 border-b border-black text-[13px] hover:bg-black hover:text-white transition-none flex items-center"
-              >
+              <AdminTableRow key={p.id} height="h-[64px]">
                 <span className="w-[80px]">
                   {p.images?.[0] ? (
-                    <Image src={p.images[0]} alt={p.name} width={48} height={48} className="object-cover w-[48px] h-[48px] border border-current" />
+                    <Image
+                      src={p.images[0]}
+                      alt={p.name}
+                      width={48}
+                      height={48}
+                      className="object-cover w-[48px] h-[48px] border border-current"
+                    />
                   ) : (
                     <span className="w-[48px] h-[48px] inline-block border border-current bg-current opacity-10" />
                   )}
@@ -159,7 +169,9 @@ export default function AdminProductsPage() {
                 <span className="w-[80px] text-right">
                   <LowStockBadge stock={p.stock} />
                 </span>
-                <span className="w-[160px] text-right">{categoriesById[p.categoryId] ?? p.collection ?? "—"}</span>
+                <span className="w-[160px] text-right">
+                  {categoriesById[p.categoryId] ?? p.collection ?? "—"}
+                </span>
                 <span className="w-[220px] text-right flex items-center justify-end gap-3">
                   <button
                     type="button"
@@ -183,10 +195,10 @@ export default function AdminProductsPage() {
                     Delete
                   </button>
                 </span>
-              </div>
+              </AdminTableRow>
             ))
           )}
-        </div>
+        </AdminTable>
       </div>
       <ConfirmationModal
         open={!!pendingDelete}

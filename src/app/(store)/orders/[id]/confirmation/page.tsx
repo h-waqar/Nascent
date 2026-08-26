@@ -6,6 +6,9 @@ import { use } from "react";
 import type { Order } from "@/types/models";
 import { formatPrice } from "@/lib/currency";
 import { formatOrderRef } from "@/lib/orderRef";
+import { AddressDisplay } from "@/components/order/AddressDisplay";
+import { OrderItemsList } from "@/components/order/OrderItemsList";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -46,11 +49,7 @@ export default function OrderConfirmationPage({ params }: Props) {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-[#4c4546]">Loading…</p>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error || !order) {
@@ -93,21 +92,11 @@ export default function OrderConfirmationPage({ params }: Props) {
           <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-black mb-6">
             Your Order
           </h2>
-          <div className="space-y-4">
-            {order.items.map((item) => (
-              <div key={item.productId} className="flex justify-between border-b border-[#e0e0e0] pb-4">
-                <div>
-                  <p className="text-[13px] uppercase tracking-[0.05em] font-medium text-black">{item.name}</p>
-                  <p className="text-[11px] text-[#4c4546] mt-0.5">Qty: {item.quantity}</p>
-                </div>
-                <p className="text-[13px] font-semibold text-black">
-                  {formatPrice(item.price * item.quantity)}
-                </p>
-              </div>
-            ))}
-          </div>
+          <OrderItemsList items={order.items} variant="simple" />
           <div className="flex justify-between mt-4 pt-4 border-t border-black">
-            <span className="text-[13px] uppercase tracking-[0.1em] font-semibold text-black">Total Paid</span>
+            <span className="text-[13px] uppercase tracking-[0.1em] font-semibold text-black">
+              Total Paid
+            </span>
             <span className="text-[18px] font-semibold text-black">{formatPrice(order.total)}</span>
           </div>
         </div>
@@ -167,16 +156,7 @@ export default function OrderConfirmationPage({ params }: Props) {
 
         {/* Shipping info */}
         <div className="mt-12 border-t border-black pt-8">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] font-semibold text-black mb-4">
-            Shipping To
-          </h2>
-          <p className="text-[13px] text-black leading-[1.8]">
-            {order.shippingAddress.fullName}<br />
-            {order.shippingAddress.line1}<br />
-            {order.shippingAddress.line2 && <>{order.shippingAddress.line2}<br /></>}
-            {order.shippingAddress.city}, {order.shippingAddress.postalCode}<br />
-            {order.shippingAddress.phone}
-          </p>
+          <AddressDisplay address={order.shippingAddress} title="Shipping To" />
         </div>
       </div>
     </div>

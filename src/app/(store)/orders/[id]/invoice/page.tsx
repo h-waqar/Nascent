@@ -5,6 +5,7 @@ import connectToDatabase from "@/lib/db";
 import { OrderModel } from "@/models";
 import mongoose from "mongoose";
 import { PrintButton } from "@/components/ui/PrintButton";
+import { AddressDisplay } from "@/components/order/AddressDisplay";
 import { formatPrice } from "@/lib/currency";
 import { formatOrderRef } from "@/lib/orderRef";
 
@@ -54,17 +55,7 @@ export default async function InvoicePage({ params }: Props) {
       {/* Invoice meta */}
       <div className="grid grid-cols-2 gap-8 border-b border-black pb-12 mb-12">
         {/* Bill To */}
-        <div>
-          <h2 className="text-[11px] uppercase tracking-[0.15em] font-semibold mb-3">Bill To</h2>
-          <p className="text-[13px] leading-[1.8]">
-            {order.shippingAddress.fullName}<br />
-            {order.shippingAddress.line1}<br />
-            {order.shippingAddress.line2 && <>{order.shippingAddress.line2}<br /></>}
-            {order.shippingAddress.city}, {order.shippingAddress.postalCode}<br />
-            {order.shippingAddress.country}<br />
-            {order.shippingAddress.phone}
-          </p>
-        </div>
+        <AddressDisplay address={order.shippingAddress} title="Bill To" />
 
         {/* Invoice Details */}
         <div>

@@ -7,6 +7,9 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useCartStore } from "@/lib/cart";
 import { formatPrice } from "@/lib/currency";
 import type { Product } from "@/types/models";
+import { ProductCard } from "@/components/product/ProductCard";
+import { OlfactoryProfile } from "@/components/product/OlfactoryProfile";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 const INTENSITY_TIERS = ["Light", "Moderate", "Strong", "Intense"] as const;
 
@@ -116,11 +119,10 @@ export default function ScentFinderPage() {
 
   if (loading) {
     return (
-      <div className="max-w-[1440px] mx-auto min-h-[calc(100vh-80px)] flex items-center justify-center bg-white">
-        <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">
-          Initializing Diagnostic Systems...
-        </p>
-      </div>
+      <LoadingState
+        message="Initializing Diagnostic Systems..."
+        minHeight="min-h-[calc(100vh-80px)]"
+      />
     );
   }
 
@@ -235,7 +237,7 @@ export default function ScentFinderPage() {
               </div>
             </div>
           ) : matches.length === 0 ? (
-            /* Calibrated but no match state (fallback, though matching always returns something) */
+            /* Calibrated but no match state */
             <div className="flex-grow flex items-center justify-center p-12 bg-white">
               <p className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">
                 No proximity matches above threshold.
@@ -284,20 +286,13 @@ export default function ScentFinderPage() {
                       </div>
 
                       {/* Olfactory profile display */}
-                      <div className="space-y-3 font-['Inter'] text-[11px] text-black mb-8 border-t border-neutral-200 pt-6">
-                        <div className="flex justify-between">
-                          <span className="uppercase text-[#4c4546] font-semibold text-[9px] tracking-wider">Top Note</span>
-                          <span className="font-light uppercase">{bestMatch.product.topNote}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="uppercase text-[#4c4546] font-semibold text-[9px] tracking-wider">Heart Note</span>
-                          <span className="font-light uppercase">{bestMatch.product.heartNote}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="uppercase text-[#4c4546] font-semibold text-[9px] tracking-wider">Base Note</span>
-                          <span className="font-light uppercase">{bestMatch.product.baseNote}</span>
-                        </div>
-                      </div>
+                      <OlfactoryProfile
+                        topNote={bestMatch.product.topNote}
+                        heartNote={bestMatch.product.heartNote}
+                        baseNote={bestMatch.product.baseNote}
+                        variant="compact"
+                        className="mb-8 border-t border-neutral-200 pt-6"
+                      />
 
                       <div className="flex flex-col sm:flex-row gap-3">
                         <button
@@ -332,43 +327,11 @@ export default function ScentFinderPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 border-t border-l border-black">
                     {secondaryMatches.map(({ product, score }) => (
-                      <Link
+                      <ProductCard
                         key={product.id}
-                        href={`/products/${product.slug}`}
-                        className="border-b border-r border-black flex flex-col bg-white group overflow-hidden cursor-pointer"
-                      >
-                        {/* Image overlay */}
-                        <div className="relative h-72 bg-[#f0eeee] overflow-hidden">
-                          {product.images[0] && (
-                            <Image
-                              src={product.images[0]}
-                              alt={product.name}
-                              fill
-                              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                              className="object-cover grayscale transition-[filter] duration-300 ease-out group-hover:grayscale-0"
-                            />
-                          )}
-                          <div className="absolute top-3 left-3 bg-black text-white text-[9px] uppercase tracking-wider px-2 py-1 font-['Inter'] font-semibold z-10">
-                            {score}% Match
-                          </div>
-                          {/* View overlay */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-[background-color] duration-300 flex items-center justify-center">
-                            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-white text-white text-[11px] uppercase tracking-[0.2em] font-semibold px-6 py-3 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                              View
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Info bar */}
-                        <div className="px-5 py-4 flex justify-between items-center bg-white text-black border-t border-black group-hover:bg-black group-hover:text-white transition-colors duration-300">
-                          <span className="font-['Inter'] uppercase tracking-[0.12em] text-[11px] font-semibold">
-                            {product.name}
-                          </span>
-                          <span className="font-['Inter'] text-[11px] font-semibold">
-                            {formatPrice(product.price)}
-                          </span>
-                        </div>
-                      </Link>
+                        product={product}
+                        badge={`${score}% Match`}
+                      />
                     ))}
                   </div>
                 </section>

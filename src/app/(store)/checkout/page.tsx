@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/lib/cart";
 import type { PaymentMethod, ShippingAddress } from "@/types/models";
 import { formatPrice } from "@/lib/currency";
+import { Input } from "@/components/ui/Input";
+import { OrderItemsList } from "@/components/order/OrderItemsList";
 
 interface PublicSettings {
   bankName: string;
@@ -146,11 +147,11 @@ export default function CheckoutPage() {
               <legend className="text-[11px] uppercase tracking-[0.2em] font-semibold text-black mb-4 block">
                 Contact Information
               </legend>
-              <InputField
+              <Input
                 label="Email Address"
                 type="email"
                 value={form.email}
-                onChange={(v) => set("email", v)}
+                onChange={(e) => set("email", e.target.value)}
                 required
               />
             </fieldset>
@@ -161,54 +162,54 @@ export default function CheckoutPage() {
                 Shipping Address
               </legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
+                <Input
                   label="First Name"
                   value={form.firstName}
-                  onChange={(v) => set("firstName", v)}
+                  onChange={(e) => set("firstName", e.target.value)}
                   required
                 />
-                <InputField
+                <Input
                   label="Last Name"
                   value={form.lastName}
-                  onChange={(v) => set("lastName", v)}
+                  onChange={(e) => set("lastName", e.target.value)}
                   required
                 />
               </div>
-              <InputField
+              <Input
                 label="Street Address"
                 value={form.line1}
-                onChange={(v) => set("line1", v)}
+                onChange={(e) => set("line1", e.target.value)}
                 required
               />
-              <InputField
+              <Input
                 label="Apartment, suite, etc. (optional)"
                 value={form.line2}
-                onChange={(v) => set("line2", v)}
+                onChange={(e) => set("line2", e.target.value)}
               />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <InputField
+                <Input
                   label="City"
                   value={form.city}
-                  onChange={(v) => set("city", v)}
+                  onChange={(e) => set("city", e.target.value)}
                   required
                 />
-                <InputField
+                <Input
                   label="State"
                   value={form.state}
-                  onChange={(v) => set("state", v)}
+                  onChange={(e) => set("state", e.target.value)}
                 />
-                <InputField
+                <Input
                   label="ZIP / Postal Code"
                   value={form.postalCode}
-                  onChange={(v) => set("postalCode", v)}
+                  onChange={(e) => set("postalCode", e.target.value)}
                   required
                 />
               </div>
-              <InputField
+              <Input
                 label="Phone Number"
                 type="tel"
                 value={form.phone}
-                onChange={(v) => set("phone", v)}
+                onChange={(e) => set("phone", e.target.value)}
                 required
               />
             </fieldset>
@@ -228,7 +229,9 @@ export default function CheckoutPage() {
               {(!bankSettings || bankSettings.codEnabled) && (
                 <label
                   className={`flex items-center gap-4 border p-4 cursor-pointer transition-none ${
-                    form.paymentMethod === "cod" ? "border-black bg-black text-white" : "border-black bg-white text-black"
+                    form.paymentMethod === "cod"
+                      ? "border-black bg-black text-white"
+                      : "border-black bg-white text-black"
                   }`}
                 >
                   <input
@@ -241,7 +244,9 @@ export default function CheckoutPage() {
                   />
                   <span className="material-symbols-outlined text-[20px]">local_shipping</span>
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">Cash on Delivery</p>
+                    <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">
+                      Cash on Delivery
+                    </p>
                     <p className="text-[11px] opacity-70 mt-0.5">Pay when your order arrives</p>
                   </div>
                 </label>
@@ -250,7 +255,9 @@ export default function CheckoutPage() {
               {(!bankSettings || bankSettings.bankTransferEnabled) && (
                 <label
                   className={`flex items-center gap-4 border p-4 cursor-pointer transition-none ${
-                    form.paymentMethod === "bank_transfer" ? "border-black bg-black text-white" : "border-black bg-white text-black"
+                    form.paymentMethod === "bank_transfer"
+                      ? "border-black bg-black text-white"
+                      : "border-black bg-white text-black"
                   }`}
                 >
                   <input
@@ -263,8 +270,12 @@ export default function CheckoutPage() {
                   />
                   <span className="material-symbols-outlined text-[20px]">account_balance</span>
                   <div>
-                    <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">Direct Bank Transfer</p>
-                    <p className="text-[11px] opacity-70 mt-0.5">Transfer to our account, confirm via WhatsApp</p>
+                    <p className="text-[12px] uppercase tracking-[0.15em] font-semibold">
+                      Direct Bank Transfer
+                    </p>
+                    <p className="text-[11px] opacity-70 mt-0.5">
+                      Transfer to our account, confirm via WhatsApp
+                    </p>
                   </div>
                 </label>
               )}
@@ -281,12 +292,15 @@ export default function CheckoutPage() {
                     ["IBAN", bankSettings?.iban ?? "—"],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between border-b border-[#e0e0e0] pb-2">
-                      <span className="text-[11px] uppercase tracking-[0.1em] text-[#4c4546]">{label}</span>
+                      <span className="text-[11px] uppercase tracking-[0.1em] text-[#4c4546]">
+                        {label}
+                      </span>
                       <span className="text-[12px] font-semibold text-black">{value}</span>
                     </div>
                   ))}
                   <p className="text-[11px] text-[#4c4546] pt-2 leading-[1.6]">
-                    Please transfer the total amount to the account above. Your order will not ship until we receive payment confirmation via WhatsApp.
+                    Please transfer the total amount to the account above. Your order will not ship
+                    until we receive payment confirmation via WhatsApp.
                   </p>
                   {bankSettings?.whatsappNumber && (
                     <a
@@ -311,7 +325,9 @@ export default function CheckoutPage() {
               disabled={loading}
               className="w-full border border-black bg-black text-white py-4 px-8 text-[11px] uppercase tracking-[0.15em] font-semibold hover:bg-white hover:text-black transition-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? "Placing Order…" : (
+              {loading ? (
+                "Placing Order…"
+              ) : (
                 <>
                   Place Order
                   <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -327,35 +343,7 @@ export default function CheckoutPage() {
             Order Summary
           </h2>
 
-          <div className="space-y-6 mb-8">
-            {items.map((item) => (
-              <div key={item.productId} className="flex gap-4">
-                <div className="relative w-16 h-20 flex-shrink-0 border border-black overflow-hidden bg-white">
-                  {item.image ? (
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      sizes="64px"
-                      className="object-cover grayscale"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-[#e8e0e1]" />
-                  )}
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-black text-white text-[10px] flex items-center justify-center font-semibold">
-                    {item.quantity}
-                  </span>
-                </div>
-                <div className="flex-1 flex flex-col justify-center">
-                  <p className="text-[13px] uppercase tracking-[0.05em] font-medium text-black">{item.name}</p>
-                  <p className="text-[11px] text-[#4c4546] mt-1">50ml Extrait de Parfum</p>
-                </div>
-                <p className="text-[13px] font-semibold text-black self-center">
-                  {formatPrice(item.price * item.quantity)}
-                </p>
-              </div>
-            ))}
-          </div>
+          <OrderItemsList items={items} className="mb-8" />
 
           <div className="border-t border-black pt-6 space-y-3">
             <div className="flex justify-between">
@@ -369,35 +357,14 @@ export default function CheckoutPage() {
               </span>
             </div>
             <div className="flex justify-between border-t border-black pt-4 mt-2">
-              <span className="text-[13px] uppercase tracking-[0.1em] font-semibold text-black">Total</span>
+              <span className="text-[13px] uppercase tracking-[0.1em] font-semibold text-black">
+                Total
+              </span>
               <span className="text-[18px] font-semibold text-black">{formatPrice(grandTotal)}</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-interface InputFieldProps {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
-  required?: boolean;
-}
-
-function InputField({ label, value, onChange, type = "text", required }: InputFieldProps) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] uppercase tracking-[0.1em] text-[#4c4546]">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-        className="border border-black bg-white px-4 py-3 text-[13px] text-black placeholder:text-[#9c9c9c] outline-none focus:outline-none focus:ring-0 focus:border-black"
-      />
     </div>
   );
 }

@@ -8,6 +8,9 @@ import { formatPrice } from "@/lib/currency";
 import { shortRef } from "@/lib/orderRef";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { Pagination } from "@/components/ui/Pagination";
+import { AdminTable, AdminTableHeader, AdminTableRow } from "@/components/admin/AdminTable";
+import { Input } from "@/components/ui/Input";
 
 type FilterValue = "all" | OrderStatus;
 
@@ -65,13 +68,17 @@ export default function AdminOrdersPage() {
       <AdminPageHeader title="Orders" />
       <div className="px-8 py-8 space-y-6">
         {/* Order ID search */}
-        <input
-          type="text"
-          placeholder="Search by order ID…"
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="border border-black px-4 h-[40px] text-[13px] w-full max-w-[320px] bg-white text-black placeholder:text-[#9c9c9c] focus:outline-none"
-        />
+        <div className="max-w-[320px]">
+          <Input
+            type="text"
+            placeholder="Search by order ID…"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
 
         {/* Status filter chips */}
         <div className="flex flex-wrap gap-2">
@@ -105,25 +112,22 @@ export default function AdminOrdersPage() {
         )}
 
         {/* Table */}
-        <div className="border border-black">
-          <div className="bg-black text-white h-[44px] px-4 flex items-center text-[11px] font-semibold uppercase tracking-[0.15em]">
+        <AdminTable>
+          <AdminTableHeader>
             <span className="w-[100px]">Order ID</span>
             <span className="w-[140px]">Date</span>
             <span className="flex-1">Customer</span>
             <span className="w-[120px] text-right">Total</span>
             <span className="w-[140px]">Status</span>
             <span className="w-[140px] text-right">Action</span>
-          </div>
+          </AdminTableHeader>
           {loading ? (
             <div className="px-4 py-3 text-[13px] text-black">Loading…</div>
           ) : pageOrders.length === 0 ? (
             <div className="px-4 py-3 text-[13px] text-black">No orders match this filter.</div>
           ) : (
             pageOrders.map((o) => (
-              <div
-                key={o.id}
-                className="h-[48px] px-4 border-b border-black text-[13px] hover:bg-black hover:text-white transition-none flex items-center"
-              >
+              <AdminTableRow key={o.id}>
                 <span className="w-[100px] font-semibold">#{shortRef(o.id)}</span>
                 <span className="w-[140px]">
                   {new Date(o.createdAt).toLocaleDateString("en-GB", {
@@ -153,35 +157,19 @@ export default function AdminOrdersPage() {
                     Print
                   </a>
                 </span>
-              </div>
+              </AdminTableRow>
             ))
           )}
-        </div>
+        </AdminTable>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] uppercase tracking-[0.1em] text-black">
-            Page {page} of {pageCount} — {filteredOrders.length} order{filteredOrders.length === 1 ? "" : "s"}
-          </span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="border border-black bg-white text-black py-2 px-4 text-[11px] font-semibold uppercase tracking-[0.15em] hover:bg-black hover:text-white transition-none disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              &larr; Prev
-            </button>
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-              disabled={page >= pageCount}
-              className="border border-black bg-white text-black py-2 px-4 text-[11px] font-semibold uppercase tracking-[0.15em] hover:bg-black hover:text-white transition-none disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next &rarr;
-            </button>
-          </div>
-        </div>
+        <Pagination
+          page={page}
+          pageCount={pageCount}
+          totalItems={filteredOrders.length}
+          itemName="order"
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );
