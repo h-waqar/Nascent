@@ -33,32 +33,35 @@ export default function AdminSettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showSaved, setShowSaved] = useState(false);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/admin/settings", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to load settings");
-      const data = await res.json();
-      const s: Settings = data.settings;
-      setSettings(s);
-      setBank({
-        bankName: s.bankName ?? "",
-        accountName: s.accountName ?? "",
-        accountNumber: s.accountNumber ?? "",
-        iban: s.iban ?? "",
-        shippingCost: String(s.shippingCost ?? 0),
-      });
-      setContact({ whatsappNumber: s.whatsappNumber ?? "" });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Load failed");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    load();
+    let cancelled = false;
+    async function init() {
+      try {
+        const res = await fetch("/api/admin/settings", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to load settings");
+        const data = await res.json();
+        const s: Settings = data.settings;
+        if (!cancelled) {
+          setSettings(s);
+          setBank({
+            bankName: s.bankName ?? "",
+            accountName: s.accountName ?? "",
+            accountNumber: s.accountNumber ?? "",
+            iban: s.iban ?? "",
+            shippingCost: String(s.shippingCost ?? 0),
+          });
+          setContact({ whatsappNumber: s.whatsappNumber ?? "" });
+        }
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Load failed");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    init();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function putSettings(patch: Partial<Settings>): Promise<void> {

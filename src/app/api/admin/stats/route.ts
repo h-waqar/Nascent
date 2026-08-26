@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/requireAdmin";
 import connectToDatabase from "@/lib/db";
 import { OrderModel, ProductModel } from "@/models";
 import { ORDER_STATUSES } from "@/lib/orderStatus";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const deny = await requireAdmin();
   if (deny) return deny;
 

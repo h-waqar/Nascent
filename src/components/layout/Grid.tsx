@@ -3,14 +3,13 @@ import React from 'react';
 interface GridProps {
   children: React.ReactNode;
   className?: string;
-  showDividers?: boolean;
 }
 
 /**
  * Editorial Grid (D-04)
  * A 12-column CSS grid system for the New Editorial aesthetic.
  */
-export const Grid: React.FC<GridProps> = ({ children, className = '', showDividers = false }) => {
+export const Grid: React.FC<GridProps> = ({ children, className = '' }) => {
   return (
     <div className={`grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-0 w-full max-w-[1440px] mx-auto ${className}`}>
       {children}

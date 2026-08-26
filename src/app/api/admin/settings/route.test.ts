@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Mock requireAdmin before importing route
 vi.mock("@/lib/requireAdmin", () => ({
@@ -56,10 +56,9 @@ describe("GET /api/admin/settings", () => {
     vi.mocked(requireAdmin).mockResolvedValue(null);
     vi.mocked(SettingsModel.findOne).mockReturnValue({
       lean: vi.fn().mockResolvedValue(MOCK_DOC),
-    } as any);
+    } as unknown as ReturnType<typeof SettingsModel.findOne>);
 
-    const req = new NextRequest("http://localhost/api/admin/settings");
-    const res = await GET(req);
+    const res = await GET();
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -80,10 +79,9 @@ describe("GET /api/admin/settings", () => {
     vi.mocked(requireAdmin).mockResolvedValue(null);
     vi.mocked(SettingsModel.findOne).mockReturnValue({
       lean: vi.fn().mockResolvedValue(null),
-    } as any);
+    } as unknown as ReturnType<typeof SettingsModel.findOne>);
 
-    const req = new NextRequest("http://localhost/api/admin/settings");
-    const res = await GET(req);
+    const res = await GET();
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -93,13 +91,10 @@ describe("GET /api/admin/settings", () => {
   });
 
   it("returns 403 when requireAdmin denies access", async () => {
-    const denyResponse = new Response(JSON.stringify({ error: "Forbidden" }), {
-      status: 403,
-    });
-    vi.mocked(requireAdmin).mockResolvedValue(denyResponse as any);
+    const denyResponse = NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    vi.mocked(requireAdmin).mockResolvedValue(denyResponse);
 
-    const req = new NextRequest("http://localhost/api/admin/settings");
-    const res = await GET(req);
+    const res = await GET();
 
     expect(res.status).toBe(403);
     const body = await res.json();
@@ -121,7 +116,7 @@ describe("PUT /api/admin/settings", () => {
     };
     vi.mocked(SettingsModel.findOneAndUpdate).mockReturnValue({
       lean: vi.fn().mockResolvedValue(updatedDoc),
-    } as any);
+    } as unknown as ReturnType<typeof SettingsModel.findOneAndUpdate>);
 
     const req = new NextRequest("http://localhost/api/admin/settings", {
       method: "PUT",
@@ -185,7 +180,7 @@ describe("PUT /api/admin/settings", () => {
     };
     vi.mocked(SettingsModel.findOneAndUpdate).mockReturnValue({
       lean: vi.fn().mockResolvedValue(updatedDoc),
-    } as any);
+    } as unknown as ReturnType<typeof SettingsModel.findOneAndUpdate>);
 
     const req = new NextRequest("http://localhost/api/admin/settings", {
       method: "PUT",
@@ -204,10 +199,8 @@ describe("PUT /api/admin/settings", () => {
   });
 
   it("returns 403 when requireAdmin denies access for PUT", async () => {
-    const denyResponse = new Response(JSON.stringify({ error: "Forbidden" }), {
-      status: 403,
-    });
-    vi.mocked(requireAdmin).mockResolvedValue(denyResponse as any);
+    const denyResponse = NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    vi.mocked(requireAdmin).mockResolvedValue(denyResponse);
 
     const req = new NextRequest("http://localhost/api/admin/settings", {
       method: "PUT",

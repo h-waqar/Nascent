@@ -11,7 +11,7 @@ const SCENT_PROFILES = ["Floral", "Woody", "Oriental", "Fresh"];
 const INTENSITIES = ["Subtle", "Moderate", "Intense"];
 
 export default function CollectionsPage() {
-  const gridReveal = useScrollReveal(0.15);
+  const [gridRef, gridVisible] = useScrollReveal(0.15);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [selectedScents, setSelectedScents] = useState<string[]>([]);
   const [selectedIntensities, setSelectedIntensities] = useState<string[]>([]);
@@ -149,8 +149,8 @@ export default function CollectionsPage() {
           </div>
         ) : (
           <div
-            ref={gridReveal.ref}
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 transition-[opacity,transform] duration-700 ease-out ${gridReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+            ref={gridRef}
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 transition-[opacity,transform] duration-700 ease-out ${gridVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           >
             {filtered.map((product) => (
               <Link

@@ -27,5 +27,5 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(threshol
     [threshold]
   );
 
-  return { ref, visible };
+  return [ref, visible] as const;
 }

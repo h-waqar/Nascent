@@ -28,7 +28,7 @@ export default function ProductPage({ params }: Props) {
   }, [slug]);
 
   const { addItem, openCart } = useCartStore();
-  const specsReveal = useScrollReveal(0.15);
+  const [specsRef, specsVisible] = useScrollReveal(0.15);
 
   if (status === "notfound") notFound();
   if (status === "loading" || !product) {
@@ -87,8 +87,8 @@ export default function ProductPage({ params }: Props) {
           {/* Olfactory profile */}
           {(product.topNote || product.heartNote || product.baseNote) && (
             <div
-              ref={specsReveal.ref}
-              className={`mb-16 border-t border-black pt-8 transition-[opacity,transform] duration-700 ease-out ${specsReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+              ref={specsRef}
+              className={`mb-16 border-t border-black pt-8 transition-[opacity,transform] duration-700 ease-out ${specsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
             >
               <h3 className="font-['Inter'] uppercase tracking-[0.1em] text-[11px] font-semibold text-black mb-8">
                 Olfactory Profile

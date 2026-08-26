@@ -62,7 +62,7 @@ Deliver an evocative, uncompromising luxury shopping experience that makes disco
 | **D-04: WhatsApp Direct Confirmation** | Standard communication and receipt verification channel in Pakistan | ✓ Good |
 | **D-05: Singleton Settings Store** | Dynamic admin control over payment toggles, banking details, and shipping fees | ✓ Good |
 | **D-06: Native Review Moderation** | Ensures verified, high-quality social proof without third-party SaaS fees | ✓ Good |
-| **D-17: Canonical Contract Location** | Single shared contract at `.planning/CONTRACT.md` for full agent alignment | ✓ Good |
+| **D-17: Canonical Contract Location** | Single shared contract at `.planning/phases/01-foundation-auth/01-03-CONTRACT.md` for full agent alignment | ✓ Good |
 
 ---
 *Last updated: 2026-08-26 after Milestone v1.0 completion & planning recovery*

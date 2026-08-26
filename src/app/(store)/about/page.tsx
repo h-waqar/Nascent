@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 export default function AboutPage() {
-  const section1Reveal = useScrollReveal(0.15);
-  const section2Reveal = useScrollReveal(0.15);
-  const section3Reveal = useScrollReveal(0.15);
+  const [section1Ref, section1Visible] = useScrollReveal(0.15);
+  const [section2Ref, section2Visible] = useScrollReveal(0.15);
+  const [section3Ref, section3Visible] = useScrollReveal(0.15);
 
   return (
     <div className="max-w-[1440px] mx-auto border-x border-b border-black bg-white min-h-screen flex flex-col">
@@ -34,9 +34,9 @@ export default function AboutPage() {
 
       {/* ── Section 1: Philosophy ── */}
       <section
-        ref={section1Reveal.ref}
+        ref={section1Ref}
         className={`grid grid-cols-1 md:grid-cols-12 border-b border-black transition-[opacity,transform] duration-700 ease-out ${
-          section1Reveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          section1Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
         <div className="md:col-span-4 p-8 md:p-16 border-b md:border-b-0 md:border-r border-black flex flex-col justify-start">
@@ -65,9 +65,9 @@ export default function AboutPage() {
 
       {/* ── Section 2: Formulation ── */}
       <section
-        ref={section2Reveal.ref}
+        ref={section2Ref}
         className={`grid grid-cols-1 md:grid-cols-12 border-b border-black transition-[opacity,transform] duration-700 ease-out ${
-          section2Reveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          section2Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
         <div className="md:col-span-8 p-8 md:p-16 order-2 md:order-1 border-r-0 md:border-r border-black flex flex-col gap-6">
@@ -117,9 +117,9 @@ export default function AboutPage() {
 
       {/* ── Section 3: Architecture ── */}
       <section
-        ref={section3Reveal.ref}
+        ref={section3Ref}
         className={`grid grid-cols-1 md:grid-cols-12 transition-[opacity,transform] duration-700 ease-out ${
-          section3Reveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          section3Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
         <div className="md:col-span-4 p-8 md:p-16 border-b md:border-b-0 md:border-r border-black flex flex-col justify-start">

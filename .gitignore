@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Large video files
 public/home_hero.mp4
+
+# GSD health report
+health-report.html

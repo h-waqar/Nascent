@@ -14,7 +14,7 @@ describe("requireAdmin", () => {
   });
 
   it("returns 401 when userId is null (not signed in)", async () => {
-    vi.mocked(auth).mockResolvedValue({ userId: null } as any);
+    vi.mocked(auth).mockResolvedValue({ userId: null } as unknown as Awaited<ReturnType<typeof auth>>);
     const result = await requireAdmin();
     expect(result).not.toBeNull();
     expect(result?.status).toBe(401);
@@ -24,7 +24,7 @@ describe("requireAdmin", () => {
     vi.mocked(auth).mockResolvedValue({
       userId: "u1",
       sessionClaims: { metadata: { role: "user" } },
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof auth>>);
     const result = await requireAdmin();
     expect(result).not.toBeNull();
     expect(result?.status).toBe(403);
@@ -34,7 +34,7 @@ describe("requireAdmin", () => {
     vi.mocked(auth).mockResolvedValue({
       userId: "u1",
       sessionClaims: { metadata: { role: "admin" } },
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof auth>>);
     const result = await requireAdmin();
     expect(result).toBeNull();
   });
@@ -43,7 +43,7 @@ describe("requireAdmin", () => {
     vi.mocked(auth).mockResolvedValue({
       userId: "u1",
       sessionClaims: undefined,
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof auth>>);
     const result = await requireAdmin();
     expect(result).not.toBeNull();
     expect(result?.status).toBe(403);

@@ -24,7 +24,7 @@ export default function ScentFinderPage() {
   const [fresh, setFresh] = useState(50);
   const [intensityVal, setIntensityVal] = useState(1); // Mapped: 0=Light, 1=Moderate, 2=Strong, 3=Intense
 
-  const gridReveal = useScrollReveal(0.15);
+  const [gridRef, gridVisible] = useScrollReveal(0.15);
   const { addItem, openCart } = useCartStore();
 
   useEffect(() => {
@@ -321,9 +321,9 @@ export default function ScentFinderPage() {
               {/* Secondary Matches Grid */}
               {secondaryMatches.length > 0 && (
                 <section
-                  ref={gridReveal.ref}
+                  ref={gridRef}
                   className={`p-8 md:p-12 transition-[opacity,transform] duration-700 ease-out ${
-                    gridReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                    gridVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                   }`}
                 >
                   <h3 className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-bold text-black border-b border-black pb-2 mb-8">

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import connectToDatabase from "@/lib/db";
 import { SettingsModel } from "@/models";
@@ -19,7 +19,7 @@ const DEFAULT_AUTHENTICATED = {
   bankTransferEnabled: true,
 };
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   // Determine whether the caller has an active session.
   // Unauthenticated callers only receive the payment-method toggle flags;
   // bank account details are withheld to reduce unauthenticated exposure.

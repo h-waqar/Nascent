@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // --- Mocks ---
 
@@ -18,7 +18,6 @@ vi.mock("@/lib/slug", () => ({
   ),
 }));
 
-const mockFindLean = vi.fn();
 const mockFindSortLean = vi.fn();
 const mockFindSort = vi.fn(() => ({ lean: mockFindSortLean }));
 const mockFind = vi.fn(() => ({ sort: mockFindSort }));
@@ -93,7 +92,7 @@ describe("GET /api/admin/products", () => {
     const doc = makeDoc();
     mockFindSortLean.mockResolvedValue([doc]);
 
-    const res = await GET(makeRequest("GET"));
+    const res = await GET();
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -103,12 +102,10 @@ describe("GET /api/admin/products", () => {
   });
 
   it("returns 403 when requireAdmin denies access", async () => {
-    const deny = new Response(JSON.stringify({ error: "Forbidden" }), {
-      status: 403,
-    }) as any;
+    const deny = NextResponse.json({ error: "Forbidden" }, { status: 403 });
     vi.mocked(requireAdmin).mockResolvedValue(deny);
 
-    const res = await GET(makeRequest("GET"));
+    const res = await GET();
     expect(res.status).toBe(403);
   });
 });
@@ -183,9 +180,7 @@ describe("POST /api/admin/products", () => {
   });
 
   it("returns 403 when requireAdmin denies access", async () => {
-    const deny = new Response(JSON.stringify({ error: "Forbidden" }), {
-      status: 403,
-    }) as any;
+    const deny = NextResponse.json({ error: "Forbidden" }, { status: 403 });
     vi.mocked(requireAdmin).mockResolvedValue(deny);
 
     const res = await POST(makeRequest("POST", { name: "X" }));

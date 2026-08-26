@@ -22,10 +22,10 @@ export default function Home() {
 
   const featured = products.slice(0, 3);
   const featured1 = products[0];
-  const featuredReveal = useScrollReveal<HTMLElement>(0.15);
-  const archReveal = useScrollReveal<HTMLElement>(0.15);
-  const gridReveal = useScrollReveal<HTMLElement>(0.15);
-  const anatomyReveal = useScrollReveal<HTMLElement>(0.15);
+  const [featuredRef, featuredVisible] = useScrollReveal<HTMLElement>(0.15);
+  const [archRef, archVisible] = useScrollReveal<HTMLElement>(0.15);
+  const [gridRef, gridVisible] = useScrollReveal<HTMLElement>(0.15);
+  const [anatomyRef, anatomyVisible] = useScrollReveal<HTMLElement>(0.15);
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col">
@@ -67,8 +67,8 @@ export default function Home() {
         {/* ── Featured fragrance ── */}
         {featured1 && (
           <section
-            ref={featuredReveal.ref}
-            className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${featuredReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+            ref={featuredRef}
+            className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${featuredVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           >
             <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
               <div className="md:col-span-6 border border-black p-4 h-[600px] relative overflow-hidden">
@@ -104,8 +104,8 @@ export default function Home() {
         {/* ── Scent architecture ── */}
         {featured1 && (
           <section
-            ref={archReveal.ref}
-            className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${archReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+            ref={archRef}
+            className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${archVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           >
             <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6">
               <div className="md:col-span-4 flex flex-col justify-center gap-8 pr-8 border-r border-black">
@@ -145,8 +145,8 @@ export default function Home() {
 
         {/* ── Curated product grid ── */}
         <section
-          ref={gridReveal.ref}
-          className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${gridReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          ref={gridRef}
+          className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${gridVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           id="collections"
         >
           <div className="max-w-[1440px] mx-auto">
@@ -201,8 +201,8 @@ export default function Home() {
 
         {/* ── Anatomy of a Scent ── */}
         <section
-          ref={anatomyReveal.ref}
-          className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${anatomyReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          ref={anatomyRef}
+          className={`py-32 px-16 border-b border-black transition-[opacity,transform] duration-700 ease-out ${anatomyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
         >
           <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-6 pr-0 md:pr-12">

@@ -7,7 +7,7 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
 ## Milestones
 
 - ✅ **v1.0 Core Luxury Storefront & Admin** - Phases 1–6, 9 (Completed)
-- 🚧 **v1.1 Quality, Build & Security Polish** - Phases 11–12 (In Progress)
+- ✅ **v1.1 Quality, Build & Security Polish** - Phases 11–12 (Completed)
 - 📋 **v2.0 Growth & Catalog Expansion** - Phases 13–15 (Planned)
 
 ## Phases
@@ -60,7 +60,7 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
 
 ---
 
-### 🚧 v1.1 Quality, Build & Security Polish (In Progress)
+### ✅ v1.1 Quality, Build & Security Polish (Completed)
 
 #### Phase 11: Production Build & Dependency Hardening
 **Goal**: Ensure clean Next.js builds on all environments and patch npm audit vulnerabilities.
@@ -69,8 +69,8 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
   1. `npm run build` succeeds without lightningcss binary errors
   2. Zero critical/high npm audit vulnerabilities
 **Plans**: 2 plans
-- [ ] 11-01: Build toolchain and native module compatibility
-- [ ] 11-02: Dependency vulnerability updates
+- [x] 11-01: Build toolchain and native module compatibility
+- [x] 11-02: Dependency vulnerability updates
 
 #### Phase 12: React Compiler & Component Optimization
 **Goal**: Refactor hooks to resolve ESLint render-time ref access and cascade warnings.
@@ -79,7 +79,7 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
   1. ESLint passes with 0 errors on `src`
   2. `useScrollReveal` performs smoothly without render-time ref reads
 **Plans**: 1 plan
-- [ ] 12-01: Scroll reveal & Nav component refactor
+- [x] 12-01: Scroll reveal & Nav component refactor
 
 ---
 
@@ -94,5 +94,5 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
 | 5. Polish & PKR Migration | v1.0 | 3/3 | Complete | 2026-05-16 |
 | 6. Hero Media | v1.0 | 1/1 | Complete | 2026-05-20 |
 | 9. Native Review Showcase | v1.0 | 2/2 | Complete | 2026-06-02 |
-| 11. Build & Dependency Hardening | v1.1 | 0/2 | In progress | - |
-| 12. Component & Hook Polish | v1.1 | 0/1 | Not started | - |
+| 11. Build & Dependency Hardening | v1.1 | 2/2 | Complete | 2026-08-26 |
+| 12. Component & Hook Polish | v1.1 | 1/1 | Complete | 2026-08-26 |

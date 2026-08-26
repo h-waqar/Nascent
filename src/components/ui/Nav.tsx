@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { Show, UserButton, SignInButton } from "@clerk/nextjs";
 import { useCartStore } from "@/lib/cart";
@@ -14,13 +14,14 @@ const NAV_LINKS = [
   { href: "/scent-finder", label: "Scent Finder" },
 ];
 
+const emptySubscribe = () => () => {};
+
 export function Nav() {
   const pathname = usePathname();
   const { items, isOpen, toggleCart, removeItem, updateQuantity, total, itemCount } =
     useCartStore();
   const count = itemCount();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   return (
     <>

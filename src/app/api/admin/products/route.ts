@@ -5,7 +5,7 @@ import { ProductModel } from "@/models";
 import { CreateProductSchema } from "@/lib/schemas";
 import { generateSlug } from "@/lib/slug";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const deny = await requireAdmin();
   if (deny) return deny;
   try {

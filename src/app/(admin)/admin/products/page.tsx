@@ -40,7 +40,34 @@ export default function AdminProductsPage() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    async function init() {
+      try {
+        const [pRes, cRes] = await Promise.all([
+          fetch("/api/admin/products", { cache: "no-store" }),
+          fetch("/api/categories", { cache: "no-store" }),
+        ]);
+        if (!pRes.ok) throw new Error("Failed to load products");
+        const pData = await pRes.json();
+        const cData = cRes.ok ? await cRes.json() : { categories: [] };
+        if (!cancelled) {
+          setProducts(pData.products ?? []);
+          const map: Record<string, string> = {};
+          (cData.categories ?? []).forEach((c: Category) => { map[c.id] = c.name; });
+          setCategoriesById(map);
+        }
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Load failed");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    init();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function handleToggleHidden(id: string, currentHidden: boolean) {
     setTogglingId(id);

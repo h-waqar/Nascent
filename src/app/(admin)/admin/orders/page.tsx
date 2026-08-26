@@ -24,9 +24,6 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setPage(1);
     const url =
       filter === "all"
         ? "/api/admin/orders"
@@ -35,7 +32,10 @@ export default function AdminOrdersPage() {
       .then(async (res) => {
         if (!res.ok) throw new Error("Failed to load orders");
         const data = await res.json();
-        if (!cancelled) setOrders(data.orders ?? []);
+        if (!cancelled) {
+          setOrders(data.orders ?? []);
+          setError(null);
+        }
       })
       .catch((e) => {
         if (!cancelled) setError(e instanceof Error ? e.message : "Load failed");
@@ -81,7 +81,11 @@ export default function AdminOrdersPage() {
               <button
                 key={v}
                 type="button"
-                onClick={() => setFilter(v)}
+                onClick={() => {
+                  setFilter(v);
+                  setPage(1);
+                  setLoading(true);
+                }}
                 className={
                   active
                     ? "bg-black text-white px-3 h-[28px] flex items-center text-[11px] font-semibold uppercase tracking-[0.1em]"
