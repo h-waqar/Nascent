@@ -101,4 +101,20 @@ describe("Mongoose models", () => {
     };
     expect(avatarPath.instance).toBe("String");
   });
+
+  it("Product schema declares rating, ratingCount, and reviewCount fields", () => {
+    const ratingPath = ProductModel.schema.path("rating") as unknown as {
+      instance: string;
+      defaultValue: number;
+    };
+    const ratingCountPath = ProductModel.schema.path("ratingCount") as unknown as {
+      instance: string;
+      defaultValue: number;
+    };
+    expect(ratingPath.instance).toBe("Number");
+    expect(ratingPath.defaultValue).toBe(5.0);
+    expect(ratingCountPath.instance).toBe("Number");
+    expect(ratingCountPath.defaultValue).toBe(0);
+  });
 });
+

@@ -22,6 +22,20 @@ export interface Product {
   topNote?: string;
   heartNote?: string;
   baseNote?: string;
+  rating?: number;              // Average rating e.g. 4.9
+  ratingCount?: number;         // Total ratings submitted
+  reviewCount?: number;         // Total written reviews
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Rating {
+  id: string;
+  productId: string;
+  visitorId: string;
+  rating: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type ReviewStatus = "pending" | "approved" | "rejected";

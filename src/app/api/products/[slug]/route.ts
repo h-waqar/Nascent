@@ -19,6 +19,9 @@ export async function GET(
       ...raw,
       id: p._id.toString(),
       _id: undefined,
+      rating: typeof raw.rating === "number" ? raw.rating : 5.0,
+      ratingCount: typeof raw.ratingCount === "number" ? raw.ratingCount : 0,
+      reviewCount: typeof raw.reviewCount === "number" ? raw.reviewCount : 0,
       createdAt: raw.createdAt instanceof Date ? raw.createdAt.toISOString() : undefined,
       updatedAt: raw.updatedAt instanceof Date ? raw.updatedAt.toISOString() : undefined,
     };

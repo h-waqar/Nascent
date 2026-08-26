@@ -2,10 +2,10 @@
 gsd_state_version: '1.0'
 status: complete
 progress:
-  total_phases: 10
-  completed_phases: 10
-  total_plans: 20
-  completed_plans: 20
+  total_phases: 11
+  completed_phases: 11
+  total_plans: 21
+  completed_plans: 21
   percent: 100
 ---
 
@@ -16,14 +16,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-08-26)
 
 **Core value:** Deliver an evocative, uncompromising luxury shopping experience that makes discovering, evaluating, and purchasing bespoke fragrances effortless and transparent.
-**Current focus:** Phase 13 Complete — Codebase Reorganized with DRY Reusable Components
+**Current focus:** Phase 14 Complete — Client Refinements, Star Ratings, Catalog Sorting & Mobile Fixes
 
 ## Current Position
 
-Phase: 13 of 13 (Component Reorganization & DRY Architecture)
-Plan: 1 of 1 in current phase (13-01)
+Phase: 14 of 14 (Client Refinements, Star Ratings, Catalog Sorting & Mobile Fixes)
+Plan: 1 of 1 in current phase (14-01)
 Status: Complete
-Last activity: 2026-08-26 — Completed Phase 13 component reorganization and DRY refactoring on `dev` branch. Created standard UI and domain primitives, refactored storefront and admin pages, deleted legacy mock files, and verified green test suite & build.
+Last activity: 2026-08-26 — Completed Phase 14 on `dev` branch. Implemented guest star ratings with SHA-256 fingerprinting, separated from authenticated reviews; added 8-option catalog sorting; replaced landing and about page images with custom royalty-free monochrome luxury assets; updated About page copy to 40% concentration; resolved hero video flicker; and fixed mobile product catalog rendering.
 
 Progress: [██████████] 100%
 

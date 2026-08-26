@@ -22,6 +22,9 @@ const ProductSchema = new Schema<ProductDoc>(
     topNote: { type: String },
     heartNote: { type: String },
     baseNote: { type: String },
+    rating: { type: Number, min: 0, max: 5, default: 5.0 },
+    ratingCount: { type: Number, min: 0, default: 0 },
+    reviewCount: { type: Number, min: 0, default: 0 },
   },
   { timestamps: true, suppressReservedKeysWarning: true }
 );

@@ -33,10 +33,10 @@ export function ScentArchitectureSection({
             variant="table"
           />
         </div>
-        <div className="md:col-span-8 h-[500px] border border-black p-4 relative overflow-hidden">
+        <div className="md:col-span-8 h-[500px] border border-black p-4 relative overflow-hidden bg-neutral-900">
           <Image
-            src="https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&q=80&w=2000"
-            alt="Scent notes"
+            src="/images/landing_scent_architecture.png"
+            alt="Scent architecture"
             fill
             sizes="(max-width: 768px) 100vw, 67vw"
             className="object-cover grayscale"

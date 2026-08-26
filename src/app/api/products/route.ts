@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
   const category = searchParams.get("category");
   const q = searchParams.get("q");
   const featured = searchParams.get("featured");
+  const sort = searchParams.get("sort");
 
   try {
     await connectToDatabase();
@@ -16,13 +17,35 @@ export async function GET(req: NextRequest) {
     if (q) filter.scentNotes = { $regex: q, $options: "i" };
     if (featured === "true") filter.isFeatured = true;
 
-    const docs = await ProductModel.find(filter).lean();
+    let sortOption: Record<string, 1 | -1> = { createdAt: -1 };
+    if (sort === "popular" || sort === "popularity") {
+      sortOption = { rating: -1, ratingCount: -1, createdAt: -1 };
+    } else if (sort === "price_asc") {
+      sortOption = { price: 1 };
+    } else if (sort === "price_desc") {
+      sortOption = { price: -1 };
+    } else if (sort === "name_asc") {
+      sortOption = { name: 1 };
+    } else if (sort === "name_desc") {
+      sortOption = { name: -1 };
+    } else if (sort === "newest") {
+      sortOption = { createdAt: -1 };
+    } else if (sort === "oldest") {
+      sortOption = { createdAt: 1 };
+    } else if (sort === "featured") {
+      sortOption = { isFeatured: -1, createdAt: -1 };
+    }
+
+    const docs = await ProductModel.find(filter).sort(sortOption).lean();
     const products = docs.map((p) => {
       const raw = p as unknown as Record<string, unknown>;
       return {
         ...raw,
         id: p._id.toString(),
         _id: undefined,
+        rating: typeof raw.rating === "number" ? raw.rating : 5.0,
+        ratingCount: typeof raw.ratingCount === "number" ? raw.ratingCount : 0,
+        reviewCount: typeof raw.reviewCount === "number" ? raw.reviewCount : 0,
         createdAt: raw.createdAt instanceof Date ? raw.createdAt.toISOString() : undefined,
         updatedAt: raw.updatedAt instanceof Date ? raw.updatedAt.toISOString() : undefined,
       };

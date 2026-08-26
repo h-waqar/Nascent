@@ -77,11 +77,27 @@ export default function ProductPage({ params }: Props) {
         {/* Right: details */}
         <div className="p-12 lg:p-24 flex flex-col justify-center bg-white">
           <div className="mb-16">
-            {product.collection && (
-              <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-[#4c4546] mb-6">
-                {product.collection}
-              </p>
-            )}
+            <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+              {product.collection ? (
+                <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-[#4c4546]">
+                  {product.collection}
+                </p>
+              ) : (
+                <span />
+              )}
+              <a
+                href="#reviews"
+                className="flex items-center gap-2 font-['Inter'] text-[11px] uppercase tracking-wider text-black hover:opacity-60 transition-opacity"
+                title="View reviews and ratings"
+              >
+                <span className="text-[13px] leading-none">
+                  {"★".repeat(Math.min(5, Math.max(1, Math.round(product.rating ?? 5))))}
+                  {"☆".repeat(5 - Math.min(5, Math.max(1, Math.round(product.rating ?? 5))))}
+                </span>
+                <span className="font-semibold">{(product.rating ?? 5.0).toFixed(1)}</span>
+                <span className="text-[#4c4546]">({product.ratingCount ?? 0})</span>
+              </a>
+            </div>
             <h1 className="text-[40px] md:text-[56px] lg:text-[72px] leading-none tracking-[-0.04em] font-light text-black uppercase mb-8">
               {product.name}
             </h1>
@@ -144,7 +160,11 @@ export default function ProductPage({ params }: Props) {
         </div>
       </section>
 
-      <ProductReviews productSlug={product.slug} />
+      <ProductReviews
+        productSlug={product.slug}
+        initialRating={product.rating}
+        initialRatingCount={product.ratingCount}
+      />
     </div>
   );
 }

@@ -21,9 +21,9 @@ export default function AboutPage() {
       </div>
 
       {/* ── Hero Image Section ── */}
-      <div className="h-[400px] md:h-[600px] border-b border-black relative overflow-hidden bg-neutral-100">
+      <div className="h-[400px] md:h-[600px] border-b border-black relative overflow-hidden bg-neutral-900">
         <Image
-          src="/images/about_hero.png"
+          src="/images/about_hero_banner.png"
           alt="Minimalist brutalist architecture representing The House of Nascent"
           fill
           priority
@@ -80,7 +80,7 @@ export default function AboutPage() {
           <div className="text-[15px] md:text-[16px] leading-[1.7] text-black font-['Inter'] max-w-[640px] space-y-6 font-light">
             <p>
               Every creation from Nascent is formulated at the highest olfactory tier. We blend our
-              fragrances at a strict 30% concentration of pure scent oils, resulting in a density that
+              fragrances at a strict 40% concentration of pure scent oils, resulting in a density that
               anchors itself to the skin and develops over days.
             </p>
             <p>
@@ -97,7 +97,7 @@ export default function AboutPage() {
           <ul className="space-y-4 font-['Inter'] text-[13px] text-black">
             <li className="flex justify-between border-b border-black pb-1">
               <span className="font-semibold uppercase tracking-wider text-[10px]">Concentration</span>
-              <span>30% Scent Oils</span>
+              <span>40% Scent Oils</span>
             </li>
             <li className="flex justify-between border-b border-black pb-1">
               <span className="font-semibold uppercase tracking-wider text-[10px]">Format</span>

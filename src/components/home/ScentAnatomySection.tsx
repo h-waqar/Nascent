@@ -54,10 +54,10 @@ export function ScentAnatomySection({
             ))}
           </ul>
         </div>
-        <div className="md:col-span-6 border border-black h-full min-h-[500px] relative overflow-hidden">
+        <div className="md:col-span-6 border border-black h-full min-h-[500px] relative overflow-hidden bg-neutral-900">
           <Image
-            src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&q=80&w=2000"
-            alt="Ingredients"
+            src="/images/landing_scent_anatomy.png"
+            alt="Raw botanical ingredients and molecular distillation"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover grayscale"

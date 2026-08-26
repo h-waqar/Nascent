@@ -94,6 +94,20 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
 **Plans**: 1 plan
 - [x] 13-01: Component Reorganization & DRY Architecture
 
+#### Phase 14: Client Refinements, Star Ratings, Catalog Sorting & Mobile Fixes
+**Goal**: Implement guest star ratings separated from authenticated reviews, comprehensive catalog sorting, royalty-free luxury brand images, 40% concentration update on The House page, hero video flicker fix, and mobile catalog rendering fix.
+**Depends on**: Phase 13
+**Success Criteria**:
+  1. Unauthenticated users can submit 1-5 star ratings directly without login
+  2. Star ratings displayed across single product page and product cards
+  3. Collections sorting supports Featured, Popularity, Price (asc/desc), Alphabetical (asc/desc), and Date (newest/oldest)
+  4. Custom royalty-free monochrome luxury assets replacing third-party stock photos
+  5. About page copy updated from 30% to 40% concentration with new banner
+  6. Hero video loads smoothly without previous image flicker
+  7. Mobile collections page displays products immediately with responsive filter drawer
+**Plans**: 1 plan
+- [x] 14-01: Client Refinements & Bug Fixes
+
 ---
 
 ## Progress
@@ -110,3 +124,4 @@ Nascent delivers an end-to-end luxury e-commerce experience from sensory scent e
 | 11. Build & Dependency Hardening | v1.1 | 2/2 | Complete | 2026-08-26 |
 | 12. Component & Hook Polish | v1.1 | 1/1 | Complete | 2026-08-26 |
 | 13. Component Reorganization | v2.0 | 1/1 | Complete | 2026-08-26 |
+| 14. Client Refinements | v2.0 | 1/1 | Complete | 2026-08-26 |

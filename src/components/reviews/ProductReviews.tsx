@@ -6,8 +6,12 @@ import type { PublicReview } from "@/types/models";
 import { ReviewStars } from "@/components/reviews/ReviewStars";
 import { ReviewerAvatar } from "@/components/reviews/ReviewerAvatar";
 
+import { QuickStarRating } from "@/components/reviews/QuickStarRating";
+
 type ProductReviewsProps = {
   productSlug: string;
+  initialRating?: number;
+  initialRatingCount?: number;
 };
 
 function getViewerName(user: ReturnType<typeof useUser>["user"]): string | null {
@@ -34,9 +38,15 @@ function withViewerAvatar(
   return { ...review, authorImageUrl: viewerImageUrl };
 }
 
-export function ProductReviews({ productSlug }: ProductReviewsProps) {
+export function ProductReviews({
+  productSlug,
+  initialRating = 5.0,
+  initialRatingCount = 0,
+}: ProductReviewsProps) {
   const { isLoaded, isSignedIn, user } = useUser();
   const [reviews, setReviews] = useState<PublicReview[]>([]);
+  const [liveRating, setLiveRating] = useState(initialRating);
+  const [liveRatingCount, setLiveRatingCount] = useState(initialRatingCount);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
@@ -99,6 +109,13 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
         const nextData = await next.json();
         setReviews(nextData.reviews ?? []);
       }
+      // Refresh rating stats
+      const rateRes = await fetch(`/api/products/${productSlug}/rate`, { cache: "no-store" });
+      if (rateRes.ok) {
+        const rateData = await rateRes.json();
+        setLiveRating(rateData.rating);
+        setLiveRatingCount(rateData.ratingCount);
+      }
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Failed to save review");
     } finally {
@@ -107,21 +124,54 @@ export function ProductReviews({ productSlug }: ProductReviewsProps) {
   }
 
   return (
-    <section className="py-24 px-12 lg:px-24 bg-white border-t border-black">
+    <section id="reviews" className="py-24 px-12 lg:px-24 bg-white border-t border-black scroll-mt-20">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-4">
-          <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-[#4c4546] mb-4">
-            Customer Notes
-          </p>
-          <h2 className="text-[32px] leading-[1.1] tracking-[-0.02em] font-normal text-black uppercase">
-            Reviews
-          </h2>
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          <div>
+            <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-[#4c4546] mb-4">
+              Ratings & Impressions
+            </p>
+            <h2 className="text-[32px] leading-[1.1] tracking-[-0.02em] font-normal text-black uppercase mb-4">
+              Reviews
+            </h2>
+          </div>
+
+          <div className="border border-black p-6 bg-[#f9f9f9] flex flex-col gap-4">
+            <div className="flex items-baseline gap-3">
+              <span className="text-[44px] font-light leading-none text-black">
+                {liveRating.toFixed(1)}
+              </span>
+              <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">
+                / 5.0 Rating
+              </span>
+            </div>
+
+            <div>
+              <p className="font-['Inter'] uppercase tracking-[0.12em] text-[10px] font-semibold text-black mb-2">
+                Quick Star Rating (No login required)
+              </p>
+              <QuickStarRating
+                productSlug={productSlug}
+                initialRating={liveRating}
+                initialRatingCount={liveRatingCount}
+                size="md"
+                onRated={(r, c) => {
+                  setLiveRating(r);
+                  setLiveRatingCount(c);
+                }}
+              />
+            </div>
+
+            <p className="font-['Inter'] text-[11px] leading-[1.6] text-[#4c4546] border-t border-black/10 pt-3">
+              Total {liveRatingCount} {liveRatingCount === 1 ? "rating" : "ratings"} recorded.
+            </p>
+          </div>
         </div>
 
         <div className="lg:col-span-8 grid grid-cols-1 gap-8">
           <div className="border border-black">
             <div className="bg-black text-white px-5 py-3 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold">
-              Write a review
+              Write a detailed review
             </div>
             <div className="p-5">
               {!isLoaded ? (

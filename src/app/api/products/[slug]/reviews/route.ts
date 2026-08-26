@@ -5,6 +5,7 @@ import { ProductModel, ReviewModel } from "@/models";
 import { takeFixedWindowRateLimit } from "@/lib/rateLimit";
 import { toPublicReview, toAdminReview } from "@/lib/reviewDtos";
 import { UpsertReviewSchema } from "@/lib/schemas";
+import { recalculateProductRating } from "@/lib/ratingHelpers";
 
 type ProductRouteContext = {
   params: Promise<{ slug: string }>;
@@ -185,6 +186,10 @@ export async function POST(req: NextRequest, { params }: ProductRouteContext) {
         }
       ).lean();
     }
+
+    await recalculateProductRating(product._id).catch((err) =>
+      console.error("Failed to recalculate rating on review:", err)
+    );
 
     return NextResponse.json({
       review: toAdminReview(review as unknown as Record<string, unknown>),
