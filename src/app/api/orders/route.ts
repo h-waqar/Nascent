@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Hoist these so the catch block can restore stock if OrderModel.create fails.
-  let verifiedItems: OrderItem[] = [];
+  const verifiedItems: OrderItem[] = [];
   const decremented: string[] = [];
 
   try {
