@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "clerk-cli": {
+      "source": "clerk/skills",
+      "sourceType": "github",
+      "skillPath": "skills/core/clerk-cli/SKILL.md",
+      "computedHash": "e58281db79643bd993391aabed6643c461928555e4bec9ce8c9eec3905d4dde5"
+    },
     "unslop": {
       "source": "poteto/noodle",
       "sourceType": "github",
