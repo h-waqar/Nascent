@@ -53,7 +53,7 @@ export function ProductCard({
       </div>
 
       {/* Info bar */}
-      <div className="px-5 py-4 flex flex-col gap-1.5 bg-white text-black border-t border-black group-hover:bg-black group-hover:text-white transition-colors duration-300">
+      <div className="px-4 py-2.5 flex flex-col gap-1 bg-white text-black border-t border-black group-hover:bg-black group-hover:text-white transition-colors duration-300">
         <div className="flex justify-between items-center">
           <span className="font-['Inter'] uppercase tracking-[0.12em] text-[11px] font-semibold truncate pr-2">
             {product.name}
@@ -62,18 +62,26 @@ export function ProductCard({
             {formatPrice(product.price)}
           </span>
         </div>
-        <div className="flex items-center justify-between font-['Inter'] text-[10px] uppercase tracking-wider text-[#4c4546] group-hover:text-neutral-300 transition-colors duration-300">
+        <div className="flex items-center justify-between font-['Inter'] text-[11px] uppercase tracking-wider text-[#4c4546] group-hover:text-neutral-300 transition-colors duration-300">
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] leading-none text-black group-hover:text-white">
-              {"★".repeat(Math.min(5, Math.max(1, Math.round(product.rating ?? 5))))}
-              {"☆".repeat(5 - Math.min(5, Math.max(1, Math.round(product.rating ?? 5))))}
+            <div className="flex items-center gap-0.5 text-[22px] leading-none text-black group-hover:text-white" aria-hidden="true">
+              {[1, 2, 3, 4, 5].map((starValue) => {
+                const isFilled = starValue <= Math.round(product.rating ?? 5);
+                return (
+                  <span key={starValue} className="leading-none select-none">
+                    {isFilled ? "★" : "☆"}
+                  </span>
+                );
+              })}
+            </div>
+            <span className="font-semibold text-black group-hover:text-white text-[12px] ml-0.5">
+              {typeof product.rating === "number" ? product.rating.toFixed(1) : "5.0"}
             </span>
-            <span className="font-semibold">{typeof product.rating === "number" ? product.rating.toFixed(1) : "5.0"}</span>
           </div>
           {typeof product.ratingCount === "number" && product.ratingCount > 0 ? (
-            <span>({product.ratingCount})</span>
+            <span className="text-[11px]">({product.ratingCount})</span>
           ) : (
-            <span className="text-[9px] opacity-70">New</span>
+            <span className="text-[10px] opacity-70">New</span>
           )}
         </div>
       </div>

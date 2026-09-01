@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Product, Category } from "@/types/models";
@@ -9,6 +9,32 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ConfirmationModal } from "@/components/admin/ConfirmationModal";
 import { LowStockBadge } from "@/components/admin/LowStockBadge";
 import { AdminTable, AdminTableHeader, AdminTableRow } from "@/components/admin/AdminTable";
+import { Input } from "@/components/ui/Input";
+import { Pagination } from "@/components/ui/Pagination";
+
+type StockFilter = "all" | "in_stock" | "low_stock" | "out_of_stock" | "hidden" | "visible";
+type SortOption = "name_asc" | "name_desc" | "price_asc" | "price_desc" | "stock_asc" | "newest";
+
+const STOCK_FILTERS: Array<{ key: StockFilter; label: string }> = [
+  { key: "all", label: "All Products" },
+  { key: "in_stock", label: "In Stock" },
+  { key: "low_stock", label: "Low Stock (≤5)" },
+  { key: "out_of_stock", label: "Out of Stock" },
+  { key: "visible", label: "Visible" },
+  { key: "hidden", label: "Hidden" },
+];
+
+const SORT_OPTIONS: Array<{ key: SortOption; label: string }> = [
+  { key: "name_asc", label: "Name: A → Z" },
+  { key: "name_desc", label: "Name: Z → A" },
+  { key: "price_asc", label: "Price: Low to High" },
+  { key: "price_desc", label: "Price: High to Low" },
+  { key: "stock_asc", label: "Stock: Low to High" },
+  { key: "newest", label: "Newest First" },
+];
+
+const ALPHABET = ["ALL", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), "#"];
+const PAGE_SIZE = 10;
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -18,6 +44,14 @@ export default function AdminProductsPage() {
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  // Filters and sorting state
+  const [search, setSearch] = useState("");
+  const [selectedCollection, setSelectedCollection] = useState("all");
+  const [stockFilter, setStockFilter] = useState<StockFilter>("all");
+  const [selectedLetter, setSelectedLetter] = useState<string>("ALL");
+  const [sortBy, setSortBy] = useState<SortOption>("name_asc");
+  const [page, setPage] = useState(1);
 
   async function load() {
     setLoading(true);
@@ -106,6 +140,106 @@ export default function AdminProductsPage() {
     }
   }
 
+  // Unique collections list
+  const availableCollections = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => {
+      const col = categoriesById[p.categoryId] ?? p.collection;
+      if (col && col.trim()) set.add(col.trim());
+    });
+    return Array.from(set).sort();
+  }, [products, categoriesById]);
+
+  // Filtered and sorted products
+  const filteredAndSortedProducts = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    return products
+      .filter((p) => {
+        // Search query filter
+        if (q) {
+          const col = (categoriesById[p.categoryId] ?? p.collection ?? "").toLowerCase();
+          const matchName = p.name.toLowerCase().includes(q);
+          const matchSlug = p.slug.toLowerCase().includes(q);
+          const matchCol = col.includes(q);
+          if (!matchName && !matchSlug && !matchCol) return false;
+        }
+
+        // Collection filter
+        if (selectedCollection !== "all") {
+          const col = categoriesById[p.categoryId] ?? p.collection;
+          if (col !== selectedCollection) return false;
+        }
+
+        // Stock status filter
+        if (stockFilter === "in_stock" && p.stock <= 5) return false;
+        if (stockFilter === "low_stock" && (p.stock > 5 || p.stock <= 0)) return false;
+        if (stockFilter === "out_of_stock" && p.stock > 0) return false;
+        if (stockFilter === "hidden" && !p.hidden) return false;
+        if (stockFilter === "visible" && p.hidden) return false;
+
+        // A-Z letter filter
+        if (selectedLetter !== "ALL") {
+          const trimmedName = p.name.trim();
+          const firstChar = trimmedName.charAt(0).toUpperCase();
+          if (selectedLetter === "#") {
+            if (/^[A-Z]$/i.test(firstChar)) return false;
+          } else {
+            if (firstChar !== selectedLetter) return false;
+          }
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "name_asc":
+            return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+          case "name_desc":
+            return b.name.localeCompare(a.name, undefined, { sensitivity: "base" });
+          case "price_asc":
+            return a.price - b.price;
+          case "price_desc":
+            return b.price - a.price;
+          case "stock_asc":
+            return a.stock - b.stock;
+          case "newest":
+          default:
+            return 0; // keeps original loaded order (createdAt: -1)
+        }
+      });
+  }, [products, categoriesById, search, selectedCollection, stockFilter, selectedLetter, sortBy]);
+
+  // Reset page to 1 when filters change
+  const handleFilterChange = () => {
+    setPage(1);
+  };
+
+  const hasActiveFilters =
+    search.trim() !== "" ||
+    selectedCollection !== "all" ||
+    stockFilter !== "all" ||
+    selectedLetter !== "ALL" ||
+    sortBy !== "name_asc";
+
+  const clearAllFilters = () => {
+    setSearch("");
+    setSelectedCollection("all");
+    setStockFilter("all");
+    setSelectedLetter("ALL");
+    setSortBy("name_asc");
+    setPage(1);
+  };
+
+  // Pagination calculations
+  const totalItems = filteredAndSortedProducts.length;
+  const pageCount = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredAndSortedProducts.slice(start, start + PAGE_SIZE);
+  }, [filteredAndSortedProducts, currentPage]);
+
   return (
     <div className="bg-white min-h-screen">
       <AdminPageHeader
@@ -119,14 +253,187 @@ export default function AdminProductsPage() {
           </Link>
         }
       />
-      <div className="px-8 py-8">
+
+      <div className="px-8 py-8 space-y-6">
         {error && (
-          <div className="border border-black px-4 py-3 mb-6 text-[11px] uppercase tracking-[0.1em] text-black">
+          <div className="border border-black px-4 py-3 text-[11px] uppercase tracking-[0.1em] text-black">
             {error}
           </div>
         )}
+
+        {/* ── Filters Section ── */}
+        <div className="border border-black p-5 space-y-5 bg-[#fafafa]">
+          {/* Row 1: Search & Sort Dropdown */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="w-full md:max-w-[340px]">
+              <Input
+                type="text"
+                placeholder="Search products by name or collection…"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  handleFilterChange();
+                }}
+              />
+            </div>
+
+            <div className="flex items-center gap-3">
+              <label htmlFor="admin-products-sort" className="font-['Inter'] text-[11px] font-semibold uppercase tracking-[0.12em] text-black whitespace-nowrap">
+                Sort By:
+              </label>
+              <select
+                id="admin-products-sort"
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value as SortOption);
+                  handleFilterChange();
+                }}
+                className="border border-black bg-white px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-black outline-none cursor-pointer"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.key} value={opt.key}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="text-[11px] font-semibold uppercase tracking-[0.1em] text-black underline hover:opacity-60 whitespace-nowrap ml-2"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Row 2: Stock / Visibility Status Chips */}
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-black/10">
+            <span className="font-['Inter'] text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] mr-1">
+              Status:
+            </span>
+            {STOCK_FILTERS.map((f) => {
+              const active = stockFilter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  type="button"
+                  onClick={() => {
+                    setStockFilter(f.key);
+                    handleFilterChange();
+                  }}
+                  className={
+                    active
+                      ? "bg-black text-white px-3 h-[28px] flex items-center text-[11px] font-semibold uppercase tracking-[0.1em]"
+                      : "border border-black bg-white text-black px-3 h-[28px] flex items-center text-[11px] font-semibold uppercase tracking-[0.1em] hover:bg-black hover:text-white transition-none"
+                  }
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Row 3: Collections Filter Chips */}
+          {availableCollections.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-black/10">
+              <span className="font-['Inter'] text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] mr-1">
+                Collection:
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCollection("all");
+                  handleFilterChange();
+                }}
+                className={
+                  selectedCollection === "all"
+                    ? "bg-black text-white px-3 h-[28px] flex items-center text-[11px] font-semibold uppercase tracking-[0.1em]"
+                    : "border border-black bg-white text-black px-3 h-[28px] flex items-center text-[11px] font-semibold uppercase tracking-[0.1em] hover:bg-black hover:text-white transition-none"
+                }
+              >
+                All Collections
+              </button>
+              {availableCollections.map((col) => {
+                const active = selectedCollection === col;
+                return (
+                  <button
+                    key={col}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCollection(col);
+                      handleFilterChange();
+                    }}
+                    className={
+                      active
+                        ? "bg-black text-white px-3 h-[28px] flex items-center text-[11px] font-semibold uppercase tracking-[0.1em]"
+                        : "border border-black bg-white text-black px-3 h-[28px] flex items-center text-[11px] font-semibold uppercase tracking-[0.1em] hover:bg-black hover:text-white transition-none"
+                    }
+                  >
+                    {col}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Row 4: A - Z Alphabet Letter Filter Bar */}
+          <div className="pt-2 border-t border-black/10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-['Inter'] text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666]">
+                A – Z Filter:
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-black">
+                {selectedLetter === "ALL"
+                  ? "Showing all letters"
+                  : selectedLetter === "#"
+                  ? "Starting with digits/symbols"
+                  : `Starting with "${selectedLetter}"`}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {ALPHABET.map((letter) => {
+                const active = selectedLetter === letter;
+                return (
+                  <button
+                    key={letter}
+                    type="button"
+                    onClick={() => {
+                      setSelectedLetter(letter);
+                      handleFilterChange();
+                    }}
+                    className={
+                      active
+                        ? "bg-black text-white w-[30px] h-[28px] flex items-center justify-center text-[11px] font-semibold uppercase tracking-[0.05em]"
+                        : "border border-black bg-white text-black w-[30px] h-[28px] flex items-center justify-center text-[11px] font-semibold uppercase tracking-[0.05em] hover:bg-black hover:text-white transition-none"
+                    }
+                    title={letter === "ALL" ? "All letters" : `Filter starting with ${letter}`}
+                  >
+                    {letter}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Table Header Stats ── */}
+        <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.1em] text-[#4c4546]">
+          <span>
+            Found <strong className="text-black">{totalItems}</strong> product{totalItems === 1 ? "" : "s"}
+            {hasActiveFilters ? " matching filters" : ""}
+          </span>
+          {totalItems > 0 && (
+            <span>
+              Page {currentPage} of {pageCount}
+            </span>
+          )}
+        </div>
+
+        {/* ── Products Table ── */}
         <AdminTable>
-          {/* Header row */}
           <AdminTableHeader>
             <span className="w-[80px]">Image</span>
             <span className="flex-1">Name</span>
@@ -137,12 +444,21 @@ export default function AdminProductsPage() {
           </AdminTableHeader>
           {loading ? (
             <div className="px-4 py-3 text-[13px] text-black">Loading…</div>
-          ) : products.length === 0 ? (
-            <div className="px-4 py-3 text-[13px] text-black">
-              No products yet. Click + New Product to add one.
+          ) : paginatedProducts.length === 0 ? (
+            <div className="px-4 py-6 text-[13px] text-black text-center space-y-2">
+              <p>No products match the selected filters or search criteria.</p>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="text-[11px] font-semibold uppercase tracking-[0.1em] underline hover:opacity-60"
+                >
+                  Reset all filters
+                </button>
+              )}
             </div>
           ) : (
-            products.map((p) => (
+            paginatedProducts.map((p) => (
               <AdminTableRow key={p.id} height="h-[64px]">
                 <span className="w-[80px]">
                   {p.images?.[0] ? (
@@ -199,7 +515,19 @@ export default function AdminProductsPage() {
             ))
           )}
         </AdminTable>
+
+        {/* ── Table Pagination ── */}
+        {totalItems > PAGE_SIZE && (
+          <Pagination
+            page={currentPage}
+            pageCount={pageCount}
+            totalItems={totalItems}
+            itemName="product"
+            onPageChange={setPage}
+          />
+        )}
       </div>
+
       <ConfirmationModal
         open={!!pendingDelete}
         title={pendingDelete ? `Delete "${pendingDelete.name}"? This cannot be undone.` : ""}

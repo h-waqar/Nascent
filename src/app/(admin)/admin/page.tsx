@@ -1,37 +1,37 @@
-import { cookies } from "next/headers";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import type { OrderStatus } from "@/types/models";
 import { formatPrice } from "@/lib/currency";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { StatsCard } from "@/components/admin/StatsCard";
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import { LowStockBadge } from "@/components/admin/LowStockBadge";
+import { LowStockAlertsTable } from "@/components/admin/LowStockAlertsTable";
 import { AdminTable, AdminTableHeader, AdminTableRow } from "@/components/admin/AdminTable";
-
-interface StatsData {
-  revenue: { allTime: number; thisMonth: number };
-  totalOrders: number;
-  statusBreakdown: Record<OrderStatus, number>;
-  topProducts: { productId: string; name: string; slug: string; unitsSold: number; revenue: number }[];
-  lowStock: { id: string; name: string; slug: string; stock: number; categoryId: string | null; collection: string | null }[];
-  recentOrders: { id: string; total: number; status: OrderStatus; createdAt: string; shippingAddress: { fullName: string; line1: string; city: string; postalCode: string; country: string; phone: string } }[];
-  activeProducts: number;
-  collectionsCount: number;
-}
-
-async function getStats(): Promise<StatsData> {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const cookieStore = await cookies();
-  const res = await fetch(`${base}/api/admin/stats`, {
-    cache: "no-store",
-    headers: { cookie: cookieStore.toString() },
-  });
-  const data = await res.json();
-  return data.stats;
-}
+import { getAdminStats } from "@/lib/adminStats";
+import type { Roles } from "@/types/globals";
 
 export default async function AdminDashboardPage() {
-  const stats = await getStats();
+  const { userId, sessionClaims } = await auth();
+  if (!userId) {
+    redirect("/sign-in?redirect_url=/admin");
+  }
+
+  let role = sessionClaims?.metadata?.role;
+  if (!role) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      role = (user.publicMetadata as { role?: Roles })?.role;
+    } catch (e) {
+      console.error("Failed to verify admin status:", e);
+    }
+  }
+
+  if (role !== "admin") {
+    redirect("/");
+  }
+
+  const stats = await getAdminStats();
 
   return (
     <div className="bg-white min-h-screen">
@@ -75,35 +75,7 @@ export default async function AdminDashboardPage() {
               VIEW ALL PRODUCTS →
             </Link>
           </div>
-          <AdminTable>
-            <AdminTableHeader>
-              <span className="flex-1">PRODUCT</span>
-              <span className="w-[140px]">COLLECTION</span>
-              <span className="w-[80px]">STOCK</span>
-              <span className="w-[100px] text-right">ACTION</span>
-            </AdminTableHeader>
-            {stats.lowStock.length === 0 ? (
-              <div className="px-4 py-3 text-[13px] text-black">All products are well-stocked.</div>
-            ) : (
-              stats.lowStock.map((row) => (
-                <AdminTableRow key={row.id}>
-                  <span className="flex-1 font-semibold">{row.name}</span>
-                  <span className="w-[140px]">{row.collection ?? "—"}</span>
-                  <span className="w-[80px]">
-                    <LowStockBadge stock={row.stock} />
-                  </span>
-                  <span className="w-[100px] text-right">
-                    <Link
-                      href={`/admin/products/${row.id}/edit`}
-                      className="text-[11px] font-semibold uppercase tracking-[0.1em] hover:underline transition-none"
-                    >
-                      EDIT →
-                    </Link>
-                  </span>
-                </AdminTableRow>
-              ))
-            )}
-          </AdminTable>
+          <LowStockAlertsTable lowStock={stats.lowStock} />
         </div>
 
         {/* Recent Orders table */}

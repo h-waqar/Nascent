@@ -10,11 +10,11 @@ const FOOTER_LINKS = [
 export function Footer() {
   return (
     <footer className="bg-white border-t border-black">
-      <div className="flex flex-col md:flex-row justify-between items-center w-full px-12 py-16 max-w-[1440px] mx-auto gap-8">
-        <div className="text-lg font-black text-black uppercase tracking-tighter">
+      <div className="flex flex-col md:flex-row justify-between items-center w-full px-8 md:px-12 py-6 md:py-8 max-w-[1440px] mx-auto gap-4 md:gap-8">
+        <div className="text-base font-black text-black uppercase tracking-tighter">
           Nascent
         </div>
-        <nav className="flex flex-wrap gap-8 justify-center">
+        <nav className="flex flex-wrap gap-6 md:gap-8 justify-center">
           {FOOTER_LINKS.map(({ href, label }) => (
             <Link
               key={href}

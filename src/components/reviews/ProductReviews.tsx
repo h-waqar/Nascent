@@ -6,8 +6,6 @@ import type { PublicReview } from "@/types/models";
 import { ReviewStars } from "@/components/reviews/ReviewStars";
 import { ReviewerAvatar } from "@/components/reviews/ReviewerAvatar";
 
-import { QuickStarRating } from "@/components/reviews/QuickStarRating";
-
 type ProductReviewsProps = {
   productSlug: string;
   initialRating?: number;
@@ -40,13 +38,9 @@ function withViewerAvatar(
 
 export function ProductReviews({
   productSlug,
-  initialRating = 5.0,
-  initialRatingCount = 0,
 }: ProductReviewsProps) {
   const { isLoaded, isSignedIn, user } = useUser();
   const [reviews, setReviews] = useState<PublicReview[]>([]);
-  const [liveRating, setLiveRating] = useState(initialRating);
-  const [liveRatingCount, setLiveRatingCount] = useState(initialRatingCount);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
@@ -103,18 +97,11 @@ export function ProductReviews({
       }
       setBody("");
       setTitle("");
-      setNotice("Review published.");
+      setNotice("Review published successfully.");
       const next = await fetch(`/api/products/${productSlug}/reviews`, { cache: "no-store" });
       if (next.ok) {
         const nextData = await next.json();
         setReviews(nextData.reviews ?? []);
-      }
-      // Refresh rating stats
-      const rateRes = await fetch(`/api/products/${productSlug}/rate`, { cache: "no-store" });
-      if (rateRes.ok) {
-        const rateData = await rateRes.json();
-        setLiveRating(rateData.rating);
-        setLiveRatingCount(rateData.ratingCount);
       }
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Failed to save review");
@@ -124,138 +111,166 @@ export function ProductReviews({
   }
 
   return (
-    <section id="reviews" className="py-24 px-12 lg:px-24 bg-white border-t border-black scroll-mt-20">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          <div>
-            <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-[#4c4546] mb-4">
-              Ratings & Impressions
-            </p>
-            <h2 className="text-[32px] leading-[1.1] tracking-[-0.02em] font-normal text-black uppercase mb-4">
-              Reviews
-            </h2>
-          </div>
-
-          <div className="border border-black p-6 bg-[#f9f9f9] flex flex-col gap-4">
-            <div className="flex items-baseline gap-3">
-              <span className="text-[44px] font-light leading-none text-black">
-                {liveRating.toFixed(1)}
-              </span>
-              <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-[#4c4546]">
-                / 5.0 Rating
-              </span>
-            </div>
-
-            <div>
-              <p className="font-['Inter'] uppercase tracking-[0.12em] text-[10px] font-semibold text-black mb-2">
-                Quick Star Rating (No login required)
-              </p>
-              <QuickStarRating
-                productSlug={productSlug}
-                initialRating={liveRating}
-                initialRatingCount={liveRatingCount}
-                size="md"
-                onRated={(r, c) => {
-                  setLiveRating(r);
-                  setLiveRatingCount(c);
-                }}
-              />
-            </div>
-
-            <p className="font-['Inter'] text-[11px] leading-[1.6] text-[#4c4546] border-t border-black/10 pt-3">
-              Total {liveRatingCount} {liveRatingCount === 1 ? "rating" : "ratings"} recorded.
-            </p>
-          </div>
+    <section id="reviews" className="py-24 px-6 md:px-12 lg:px-24 bg-white border-t border-black scroll-mt-20">
+      {/* ── Section Header ── */}
+      <div className="mb-12 border-b border-black pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <p className="font-['Inter'] uppercase tracking-[0.2em] text-[11px] text-[#4c4546] mb-2">
+            Community Feedback
+          </p>
+          <h2 className="text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] font-normal text-black uppercase">
+            Customer Written Reviews
+          </h2>
         </div>
+        <p className="font-['Inter'] text-[12px] uppercase tracking-[0.1em] text-[#4c4546]">
+          Detailed write-ups on longevity, sillage, and olfactory notes
+        </p>
+      </div>
 
-        <div className="lg:col-span-8 grid grid-cols-1 gap-8">
-          <div className="border border-black">
-            <div className="bg-black text-white px-5 py-3 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold">
-              Write a detailed review
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* ── LEFT / FORM COLUMN: Write a detailed review ── */}
+        <div className="lg:col-span-5">
+          <div className="border border-black sticky top-24">
+            <div className="bg-black text-white px-5 py-3 flex items-center justify-between">
+              <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold flex items-center gap-2">
+                <span>✍️</span> WRITE A DETAILED REVIEW
+              </span>
+              <span className="font-['Inter'] uppercase tracking-[0.1em] text-[10px] text-white/70">
+                Text Review
+              </span>
             </div>
-            <div className="p-5">
+
+            <div className="p-6">
               {!isLoaded ? (
                 <p className="font-['Inter'] text-[13px] text-black">Checking account status…</p>
               ) : !isSignedIn ? (
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-                  <p className="font-['Inter'] text-[13px] text-black">
-                    Sign in to submit one review for this product.
+                <div className="flex flex-col gap-4">
+                  <p className="font-['Inter'] text-[13px] font-semibold text-black">
+                    Share your detailed impression with other fragrance enthusiasts.
+                  </p>
+                  <p className="font-['Inter'] text-[12px] text-[#4c4546] leading-[1.5]">
+                    Sign in to describe your scent journey, longevity, and projection.
                   </p>
                   <SignInButton mode="modal">
-                    <button className="border border-black bg-black text-white py-3 px-6 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-white hover:text-black transition-none">
-                      Sign In
+                    <button className="border border-black bg-black text-white py-3 px-6 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-white hover:text-black transition-none w-full">
+                      Sign In to Review
                     </button>
                   </SignInButton>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
-                  <ReviewStars rating={rating} onChange={setRating} />
-                  <input
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                    maxLength={120}
-                    placeholder="Review title (optional)"
-                    className="border border-black px-4 py-3 font-['Inter'] text-[13px] text-black outline-none"
-                  />
-                  <textarea
-                    value={body}
-                    onChange={(event) => setBody(event.target.value)}
-                    minLength={10}
-                    maxLength={2000}
-                    required
-                    placeholder="Describe the scent, wear, and impression."
-                    className="min-h-[140px] border border-black px-4 py-3 font-['Inter'] text-[13px] text-black outline-none"
-                  />
+                  <div>
+                    <label className="block font-['Inter'] uppercase tracking-[0.12em] text-[11px] font-semibold text-black mb-2">
+                      Review Rating Score:
+                    </label>
+                    <ReviewStars rating={rating} onChange={setRating} />
+                  </div>
+                  <div>
+                    <label className="block font-['Inter'] uppercase tracking-[0.12em] text-[11px] font-semibold text-black mb-1.5">
+                      Review Title (Optional):
+                    </label>
+                    <input
+                      value={title}
+                      onChange={(event) => setTitle(event.target.value)}
+                      maxLength={120}
+                      placeholder="e.g. 'Polished drydown and great compliments'"
+                      className="border border-black px-4 py-2.5 font-['Inter'] text-[13px] text-black outline-none w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-['Inter'] uppercase tracking-[0.12em] text-[11px] font-semibold text-black mb-1.5">
+                      Detailed Review (Required):
+                    </label>
+                    <textarea
+                      value={body}
+                      onChange={(event) => setBody(event.target.value)}
+                      minLength={10}
+                      maxLength={2000}
+                      required
+                      placeholder="Describe the scent evolution, drydown, longevity, and overall impression (minimum 10 characters)..."
+                      className="min-h-[140px] border border-black px-4 py-3 font-['Inter'] text-[13px] text-black outline-none w-full"
+                    />
+                  </div>
                   <button
                     type="submit"
                     disabled={submitting || body.trim().length < 10}
-                    className="justify-self-start border border-black bg-black text-white py-3 px-8 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-white hover:text-black transition-none disabled:opacity-40"
+                    className="border border-black bg-black text-white py-3.5 px-8 font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold hover:bg-white hover:text-black transition-none disabled:opacity-40 cursor-pointer w-full"
                   >
-                    {submitting ? "Saving…" : "Publish review"}
+                    {submitting ? "Publishing…" : "Publish Review"}
                   </button>
                 </form>
               )}
+
               {notice && (
-                <p className="mt-4 border border-black px-4 py-3 font-['Inter'] text-[12px] uppercase tracking-[0.1em] text-black">
+                <p className="mt-4 border border-black px-4 py-3 font-['Inter'] text-[12px] uppercase tracking-[0.1em] text-black bg-[#f2f2f2]">
                   {notice}
                 </p>
               )}
               {error && (
-                <p className="mt-4 border border-black px-4 py-3 font-['Inter'] text-[12px] uppercase tracking-[0.1em] text-black">
+                <p className="mt-4 border border-black px-4 py-3 font-['Inter'] text-[12px] uppercase tracking-[0.1em] text-black bg-[#fef2f2]">
                   {error}
                 </p>
               )}
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-0 border-t border-l border-black">
+        {/* ── RIGHT COLUMN: Customer Reviews List ── */}
+        <div className="lg:col-span-7">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-['Inter'] uppercase tracking-[0.15em] text-[12px] font-semibold text-black">
+              All Reviews ({displayReviews.length})
+            </h3>
+            <span className="font-['Inter'] uppercase tracking-[0.1em] text-[10px] text-[#4c4546]">
+              Verified Feedback
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-0 border border-black">
             {loading ? (
-              <div className="border-r border-b border-black p-5 font-['Inter'] text-[13px] text-black">
+              <div className="p-6 font-['Inter'] text-[13px] text-black">
                 Loading reviews…
               </div>
             ) : displayReviews.length === 0 ? (
-              <div className="border-r border-b border-black p-5 font-['Inter'] text-[13px] text-black">
-                No reviews yet.
+              <div className="p-8 font-['Inter'] text-[13px] text-black text-center space-y-2">
+                <p className="font-semibold">No detailed reviews written yet.</p>
+                <p className="text-[#666] text-[12px]">
+                  Be the first to share an in-depth wear impression!
+                </p>
               </div>
             ) : (
-              displayReviews.map((review) => (
-                <article key={review.id} className="border-r border-b border-black p-5">
-                  <div className="flex items-center justify-between gap-4 mb-4">
+              displayReviews.map((review, idx) => (
+                <article
+                  key={review.id}
+                  className={`p-6 ${idx !== displayReviews.length - 1 ? "border-b border-black" : ""}`}
+                >
+                  <div className="flex items-center justify-between gap-4 mb-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <ReviewerAvatar name={review.authorName} imageUrl={review.authorImageUrl} size="sm" />
-                      <span className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546] truncate">
+                      <span className="font-['Inter'] uppercase tracking-[0.15em] text-[11px] font-semibold text-black truncate">
                         {review.authorName}
                       </span>
                     </div>
                     <span className="font-['Inter'] uppercase tracking-[0.15em] text-[10px] text-[#4c4546]">
-                      {new Date(review.createdAt).toLocaleDateString()}
+                      {new Date(review.createdAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
-                  <ReviewStars rating={review.rating} size="sm" />
+
+                  <div className="flex items-center gap-2 mb-3">
+                    <ReviewStars rating={review.rating} size="sm" />
+                    <span className="font-['Inter'] text-[10px] uppercase tracking-wider text-[#4c4546]">
+                      Verified Review
+                    </span>
+                  </div>
+
                   {review.title && (
-                    <h3 className="font-['Inter'] uppercase tracking-[0.1em] text-[12px] font-semibold text-black mt-4 mb-3">
+                    <h4 className="font-['Inter'] uppercase tracking-[0.1em] text-[13px] font-semibold text-black mb-2">
                       {review.title}
-                    </h3>
+                    </h4>
                   )}
                   <p className="font-['Inter'] text-[14px] leading-[1.6] text-black">
                     “{review.body}”

@@ -1,5 +1,6 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import type { Roles } from "@/types/globals";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)", "/api/admin(.*)"]);
 
@@ -23,8 +24,28 @@ const isPublicRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, request) => {
   if (isAdminRoute(request)) {
-    const { sessionClaims } = await auth();
-    if (sessionClaims?.metadata?.role !== "admin") {
+    const { userId, sessionClaims } = await auth();
+    if (!userId) {
+      if (request.nextUrl.pathname.startsWith("/api/")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const signInUrl = new URL("/sign-in", request.url);
+      signInUrl.searchParams.set("redirect_url", request.url);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    let role = sessionClaims?.metadata?.role;
+    if (!role) {
+      try {
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        role = (user.publicMetadata as { role?: Roles })?.role;
+      } catch {
+        // ignore
+      }
+    }
+
+    if (role !== "admin") {
       if (request.nextUrl.pathname.startsWith("/api/")) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }

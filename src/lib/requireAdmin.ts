@@ -1,5 +1,6 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import type { Roles } from "@/types/globals";
 
 /**
  * Call at the top of every /api/admin/* route handler.
@@ -12,7 +13,19 @@ export async function requireAdmin(): Promise<NextResponse | null> {
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (sessionClaims?.metadata?.role !== "admin") {
+
+  let role = sessionClaims?.metadata?.role;
+  if (!role) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      role = (user.publicMetadata as { role?: Roles })?.role;
+    } catch (e) {
+      console.error("Failed to fetch user metadata from Clerk in requireAdmin:", e);
+    }
+  }
+
+  if (role !== "admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   return null;

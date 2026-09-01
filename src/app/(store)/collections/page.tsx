@@ -96,7 +96,7 @@ export default function CollectionsPage() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row border-x border-b border-black max-w-[1440px] mx-auto bg-white min-h-screen">
+    <div className="flex flex-col md:flex-row border-x border-b border-black max-w-[1440px] mx-auto bg-white flex-grow">
       {/* ── Mobile Filter & Sort Bar (Sticky / Header on small screens) ── */}
       <div className="md:hidden border-b border-black p-4 flex items-center justify-between bg-[#f9f9f9] sticky top-0 z-20">
         <button
@@ -247,7 +247,7 @@ export default function CollectionsPage() {
       {/* ── Product area ── */}
       <section className="flex-grow flex flex-col min-w-0">
         {/* Top Control Bar: Search & Desktop Sort */}
-        <div className="border-b border-black p-4 md:p-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white">
+        <div className="border-b border-black px-4 py-3.5 md:px-8 md:py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white">
           <div className="flex items-center flex-grow">
             <span className="material-symbols-outlined text-black mr-3 text-[20px]">search</span>
             <input
@@ -255,13 +255,13 @@ export default function CollectionsPage() {
               placeholder="SEARCH COLLECTION..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent border-none focus:outline-none font-['Inter'] uppercase tracking-[0.15em] text-[11px] text-black placeholder:text-[#4c4546]"
+              className="w-full bg-transparent border-none focus:outline-none font-['Inter'] uppercase tracking-[0.12em] text-[14px] text-black placeholder:text-[#666]"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch("")}
-                className="font-['Inter'] text-[10px] uppercase text-[#4c4546] hover:text-black px-2"
+                className="font-['Inter'] text-[11px] uppercase tracking-wider text-[#4c4546] hover:text-black px-2 cursor-pointer"
               >
                 Clear
               </button>
